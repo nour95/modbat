@@ -45,6 +45,7 @@ object Modbat {
 
   var isUnitTest = true
 
+
   def showFailure(f: (TransitionResult, String)) = {
     val failureType = f._1
     val failedTrans = f._2
@@ -111,6 +112,11 @@ class Modbat(val mbt: MBT) {
     }
   }
 
+  /***
+    * Sets up log streams/files,
+    * creates initial model instance,
+    * calls exploreModel
+    */
   def wrapRun = {
     val origOut = mbt.log.out
     val origErr = mbt.log.err
@@ -119,7 +125,7 @@ class Modbat(val mbt: MBT) {
     Console.withErr(err) {
       Console.withOut(out) {
         val model = mbt.launch(null)
-        val result = exploreModel(model)
+        val result = exploreModel(model)  //Nour
         mbt.cleanup()
         mbt.log.out = origOut
         mbt.log.err = origErr
@@ -407,7 +413,7 @@ class Modbat(val mbt: MBT) {
       Runtime.getRuntime().addShutdownHook(ShutdownHandler)
     }
 
-    runTests(n)
+    runTests(n) //Nour
 
     coverage
     appState = AppShutdown
@@ -440,7 +446,7 @@ class Modbat(val mbt: MBT) {
         mbt.log.out.println()
       }
       mbt.checkDuplicates = (i == 1)
-      val result = runTest
+      val result = runTest //Nour: run the tests
       count = i
       restoreChannels
       if (TransitionResult.isErr(result)) {
@@ -463,6 +469,11 @@ class Modbat(val mbt: MBT) {
     }
   }
 
+  /**
+    * sets up data structures for test run,
+    * calls exploreSuccessors,
+    * reports result
+    */
   def exploreModel(model: ModelInstance) = {
     mbt.log.debug("--- Exploring model ---")
     timesVisited.clear()
@@ -474,7 +485,7 @@ class Modbat(val mbt: MBT) {
       mbt.log.fine("Trace field " + f.getName + " has initial value " + value)
       model.tracedFields.values(f) = value
     }
-    val result = exploreSuccessors
+    val result = exploreSuccessors //Nour: here
     val retVal = result._1
     val recordedTrans = result._2
     assert(retVal == Ok() || TransitionResult.isErr(retVal))
@@ -517,7 +528,8 @@ class Modbat(val mbt: MBT) {
     }
   }
 
-  def allSuccessors(givenModel: ModelInstance): List[(ModelInstance, Transition)] = {
+  def allSuccessors(givenModel: ModelInstance): List[(ModelInstance, Transition)] =
+  {
     val result = new ListBuffer[(ModelInstance, Transition)]()
     if (givenModel == null) {
       mbt.stayLock.synchronized {
@@ -556,12 +568,75 @@ class Modbat(val mbt: MBT) {
     w
   }
 
+
+  /**
+    * picks one transition based on the current model state
+    * (heuristic or random choice)
+    */
   def makeChoice(choices: List[(ModelInstance, Transition)], totalW: Double) = {
     mbt.config.search match {
       case "random" => weightedChoice(choices, totalW)
       case "heur"   => heuristicChoice(choices, totalW)
+      case "exhaustive" => exhaustiveChoice(choices, totalW)
     }
   }
+
+  def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double) =
+  {
+    //assumptions: choices has the same source (ask Cyrille) or is it a random things.
+    //syntactic state not semantic state (Think about the choose keyword in th e modebat DSL)
+    // how to make sure that this methods will be called until this method return null (what is the req to stop?)
+//
+    //val transitions = choices.map(_._2)
+    if (choices.isEmpty)
+      return null;
+
+    val src = choices.head._1.initialState;
+
+    val depth = 5;
+    var currentDepth = IterativeDepthSearch.currentDepth;
+
+    if (currentDepth == depth)
+      return null
+
+    var choiceToReturn = null
+    if(currentDepth < depth )
+    {
+      if (IterativeDepthSearch.workList.isEmpty)
+      {
+
+        // genrate worklist for current depth
+        for (oneChoice <- choices)
+        {
+
+          val transition = oneChoice._2
+          //...  here src will be used
+          // "src, next, next, next, ..., up to current depth"
+
+        }
+
+      }
+
+      //pick one
+      val res = IterativeDepthSearch.workList.head;  // 1, 1, 2
+
+      IterativeDepthSearch.workList.drop(1); // 1 here is the number of droped item and not index //make sure that the set is mutable otherwise save the new worklist eahch time
+      IterativeDepthSearch.done.add(res);
+
+
+
+
+
+    }
+
+    IterativeDepthSearch.currentDepth += 1
+
+    choices.head
+//    val choice =  weightedChoice(choices, totalW) //calling random for now
+//    choice
+
+  }
+
 
   def heuristicChoice(choices: List[(ModelInstance, Transition)],
                       totalW: Double): (ModelInstance, Transition) = {
@@ -590,15 +665,16 @@ class Modbat(val mbt: MBT) {
       choices.map(_._2.coverage.expectedReward.countPrecondFail)
 
     mbt.log.debug(
-      "*** List of failed assertion counts:" + choices.map(
+      "*** List of failed assertion counts:" + choices.map(   // Nour: 2 here means the 2nd thing in the tupple, map just apply a function to the tuple
         _._2.coverage.expectedReward.countAssertFail))
     mbt.log.debug(
       "*** List of passed assertion counts:" + choices.map(
         _._2.coverage.expectedReward.countAssertPass))
 
     mbt.log.debug(
-      "*** List of passed precondition counts:" + choices.map(
-        _._2.coverage.expectedReward.countPrecondPass))
+      "*** List of passed precondition counts:" + choices.map( // Nour ==:  t => t._2.coverage.expectedReward.countPrecondPass.so it is a func that take a tupple and return int
+
+        t => t._2.coverage.expectedReward.countPrecondPass))
 
     mbt.log.debug("*** List of failed precondition counts:" + precondFailedCountLst)
     mbt.log.debug(
@@ -787,8 +863,11 @@ class Modbat(val mbt: MBT) {
                    val failed: Boolean,
                    val isObserver: Boolean)
 
+  /**
+    * calls executeSuccessorTrans (and stores result)
+    */
   def exploreSuccessors: (TransitionResult, RecordedTransition) = {
-    executeSuccessorTrans match {
+    executeSuccessorTrans match {  //Nour: can I use the  path info or not
       case ((Finished, _), _) => {
         insertPathInfoInTrie
         (Ok(), null)
@@ -806,6 +885,12 @@ class Modbat(val mbt: MBT) {
     }
   }
 
+  /**
+    * calls successors to get outgoing transitions
+    * calls makeChoice (to choose _one_ transition),
+    * inside "invocationSuccessor.getOrElse" that
+    * covers a special feature
+    */
   def executeSuccessorTrans
     : ((TransitionResult, RecordedTransition), PathResult) = {
     var successors = allSuccessors(null)
@@ -828,7 +913,7 @@ class Modbat(val mbt: MBT) {
       var successor: (ModelInstance, Transition) = null
       //successor = invocationSuccessor.getOrElse(weightedChoice(successors, totalW))
       // TODO: try bandit by calling makeChoice
-      successor = invocationSuccessor.getOrElse(makeChoice(successors, totalW))
+      successor = invocationSuccessor.getOrElse(makeChoice(successors, totalW)) //Nour: makechoice is here, and it looks like I have a copy of the recorded trensition
       if (successor != null) {
         val model = successor._1
         val trans = successor._2

@@ -37,7 +37,7 @@ class Trie(val mbt: MBT) {
 
       // Check if the new transition is a self loop and repeated in the path (self-transition).
       if (currentNode.currentTransition != null && currentNode.currentTransition.idx == p.transition.idx
-          && currentNode.transitionInfo.transitionQuality == p.transitionQuality) {
+          && currentNode.transitionInfo.transitionQuality == p.transitionQuality) { //todo : Nour where is the check on self loop
 
         // Only update the counter for this repeatedly executed transition of current test case
         currentNode.transExecutedCounter += 1

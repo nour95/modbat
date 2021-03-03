@@ -71,7 +71,7 @@ object Main {
     config.mode match {
       case "dot" =>
         new Dotify(config, mbt.launch(null), modelClassName + ".dot").dotify()
-      case _ => modbat.explore(config.nRuns)
+      case _ => modbat.explore(config.nRuns)  //Nour
     }
   }
 

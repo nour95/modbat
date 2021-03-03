@@ -100,7 +100,7 @@ class Configuration extends modbat.config.Configuration {
   var mode = "exec"
 
   @Doc("search mode (for usage mode=exec)")
-  @Choice(Array("random", "heur"))
+  @Choice(Array("random", "heur", "exhaustive"))
   var search = "random"
 
   @Doc("bandit trade off value (for usage search=heur)")

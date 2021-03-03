@@ -29,7 +29,7 @@ object ModbatTestHarness {
     val logFileName = "log/modbat/" + testFileName(className, td)
     var exc: Throwable = null
     try {
-      Main.run(args, config, new Log(new PrintStream(out), new PrintStream(err)))
+      Main.run(args, config, new Log(new PrintStream(out), new PrintStream(err))) //Nour
       if (shouldFail) {
         assert (false,
                 "Non-zero error code expected but test was successful.")
