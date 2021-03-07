@@ -2,13 +2,12 @@ package modbat.graphadaptor
 
 import graph.Graph
 import graph.Node
-import modbat.dsl.State
 import modbat.dsl.Transition
 import modbat.mbt.{Configuration, ModelInstance}
 
 class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
-//  private val log = model.mbt.log
-  val graph: Graph[State, EdgeData] = new Graph(new Node(model.initialState), model.states.size)
+  //  private val log = model.mbt.log
+  val graph: Graph[StateData, EdgeData] = new Graph(new Node(new StateData(model.initialState)), model.states.size)
 
   private def getTransitionLabel(transition: Transition): String = {
     if (!config.autoLabels && transition.action.label.isEmpty) {
@@ -34,14 +33,14 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
   private def createEdgeData(transition: Transition): EdgeData = {
     val transitionLabel: String = getTransitionLabel(transition)
     if (transition.expectedExceptions.isEmpty) {
-      EdgeData(
+      new EdgeData(
         transitionLabel = transitionLabel,
         transitionType = NormalTransition(isDeterministic = true),
         transition = transition
       )
     } else {
       val transitionLabel = transition.expectedExceptions.mkString(", ")
-      EdgeData(
+      new EdgeData(
         transitionLabel = transitionLabel,
         transitionType = ExpectedExceptionTransition(isDeterministic = true),
         transition = transition
@@ -52,19 +51,22 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
   def createGraph(): Unit = {
     for (transition <- model.transitions) {
       if (!transition.isSynthetic) {
+        // create edges data for deterministic "transition" whether it is a normal transition
+        // or an expected exception transition
         val transitionEdgeData = createEdgeData(transition)
-        // add edge to graph
+        // add edge data to graph (that goes from origin state to destination state)
         graph.addEdge(transitionEdgeData.originState, transitionEdgeData.destinationState, transitionEdgeData)
 
+        // create edge data for all nextIf (deterministic) transitions and maybeNextif (non-deterministic) transitions
         for (nextStatePredicate <- transition.nextStatePredicates) {
           // ask Cyrille about label to override: ( "original transition label" )
-          val overridingTransitionEdgeData = EdgeData(
+          val overridingTransitionEdgeData = new EdgeData(
             transitionLabel = addParens(transitionEdgeData.transitionLabel),
             transitionType = NormalTransition(isDeterministic = !nextStatePredicate.nonDet),
             transition = nextStatePredicate.target // transition
           )
 
-          // add edge to graph
+          // add edge data to graph (that goes from origin state to destination state)
           graph.addEdge(
             overridingTransitionEdgeData.originState,
             overridingTransitionEdgeData.destinationState,
@@ -72,14 +74,15 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
           )
         }
 
+        // create edge data for all non-deterministic exception transitions
         for (nonDeterministicException <- transition.nonDetExceptions) {
-          val nonDeterministicExceptionTransition_EdgeData = EdgeData(
+          val nonDeterministicExceptionTransition_EdgeData = new EdgeData(
             transitionLabel = nonDeterministicException.exception.toString(),
             transitionType = ExpectedExceptionTransition(isDeterministic = false),
             transition = nonDeterministicException.target // transition
           )
 
-          // add edge to graph
+          // add edge data to graph (that goes from origin state to destination state)
           graph.addEdge(
             nonDeterministicExceptionTransition_EdgeData.originState,
             nonDeterministicExceptionTransition_EdgeData.destinationState,
