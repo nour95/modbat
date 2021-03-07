@@ -6,9 +6,24 @@ import modbat.dsl.Transition
 import modbat.mbt.{Configuration, ModelInstance}
 
 class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
-  //  private val log = model.mbt.log
+  // log that could be used for debugging purposes
+  // private val log = model.mbt.log
+
+  /*
+     "graph" is a public field representing the model instance.
+     - "graph" has root "model.initialState".
+     - "graph" has an initial number of nodes of "model.states.size" which is allowed
+       to grow by adding more states and edges.
+   */
   val graph: Graph[StateData, EdgeData] = new Graph(new Node(new StateData(model.initialState)), model.states.size)
 
+  // call createGraph (which is the starting point for creating a graph representation of the model)
+  createGraph()
+
+  /**
+    * Get transition label of "transition" given the configuration and
+    * the model instance of this graph adaptor.
+    */
   private def getTransitionLabel(transition: Transition): String = {
     if (!config.autoLabels && transition.action.label.isEmpty) {
       ""
@@ -30,6 +45,10 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
     }
   }
 
+  /**
+    * Create (and return) edge data for "transition" whether it is a normal transition
+    * or an expected exception transition.
+    */
   private def createEdgeData(transition: Transition): EdgeData = {
     val transitionLabel: String = getTransitionLabel(transition)
     if (transition.expectedExceptions.isEmpty) {
@@ -48,7 +67,11 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
     }
   }
 
-  def createGraph(): Unit = {
+  /**
+    * This method is the entry point for this graph adapter to create
+    * a graph given a model instance and a configuration.
+    */
+  private def createGraph(): Unit = {
     for (transition <- model.transitions) {
       if (!transition.isSynthetic) {
         // create edges data for deterministic "transition" whether it is a normal transition
