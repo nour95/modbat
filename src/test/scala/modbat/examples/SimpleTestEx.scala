@@ -5,7 +5,8 @@ import modbat.mbt.ModbatTestHarness
 
 class SimpleTestEx  extends fixture.FlatSpec with fixture.TestDataFixture with Matchers
 {
-  "SimpleModelTest1" should "pass" in { //
+
+  "SimpleModelTest1" should "pass" in {
     td =>
       ModbatTestHarness.test(Array("-s=1", "-n=30", "--no-redirect-out","--search=exhaustive", "--log-level=fine", "modbat.examples.SimpleModelE"), (() => ModbatTestHarness.setExamplesJar()), td)
   }
