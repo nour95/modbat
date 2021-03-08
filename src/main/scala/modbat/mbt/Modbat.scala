@@ -586,54 +586,69 @@ class Modbat(val mbt: MBT) {
     //assumptions: choices has the same source (ask Cyrille) or is it a random things.
     //syntactic state not semantic state (Think about the choose keyword in th e modebat DSL)
     // how to make sure that this methods will be called until this method return null (what is the req to stop?)
-//
-    //val transitions = choices.map(_._2)
-    if (choices.isEmpty)
-      return null;
-
-    val src = choices.head._1.initialState;
-
     val depth = 5;
-    var currentDepth = IterativeDepthSearch.currentDepth;
-
-    if (currentDepth == depth)
-      return null
-
-    var choiceToReturn = null
-    if(currentDepth < depth )
-    {
-      if (IterativeDepthSearch.workList.isEmpty)
-      {
-
-        // genrate worklist for current depth
-        for (oneChoice <- choices)
-        {
-
-          val transition = oneChoice._2
-          //...  here src will be used
-          // "src, next, next, next, ..., up to current depth"
-
-        }
-
-      }
-
-      //pick one
-      val res = IterativeDepthSearch.workList.head;  // 1, 1, 2
-
-      IterativeDepthSearch.workList.drop(1); // 1 here is the number of droped item and not index //make sure that the set is mutable otherwise save the new worklist eahch time
-      IterativeDepthSearch.done.add(res);
 
 
+//    if(IterativeDepthSearch.workList.isEmpty)
+//    {
+//      //make sure curre t depyh = 0
+//      val src = choices.head._1.initialState; //I don't need to add this to the list
+//
+//      // genrate worklist for current depth
+//      for (oneChoice <- choices)
+//      {
+//        val transition = oneChoice._2
+//        // generate path from this node until end while paying attention to the depth
+//        IterativeDepthSearch.generatePathFromCurrentTransistion(transition)
+//
+//        //...  here src will be used
+//        // "src, next, next, next, ..., up to current depth"
+//
+//      }
+//
+//
+//
+//
+//
+//
+//    }
+//
+//
+//
+//
+//    //probably no else statements
+//    else // pick one option from list
+//    {
+//      var currentDepth = IterativeDepthSearch.currentDepth;
+//
+//      if (currentDepth == depth)
+//        return choices.head //to do: return nothing
+//        //return null
+//
+//      var choiceToReturn = null
+//      if(currentDepth < depth )
+//      {
+//
+//        //pick one
+//        val res = IterativeDepthSearch.workList.head;  // 1, 1, 2
+//
+//        IterativeDepthSearch.workList.drop(1); // 1 here is the number of droped item and not index //make sure that the set is mutable otherwise save the new worklist eahch time
+//        IterativeDepthSearch.done.add(res);
+//
+//
+//
+//      }
+//    }
+//
+//
+//
+//
+//    IterativeDepthSearch.currentDepth += 1
+//    choices.head
 
 
-
-    }
-
-    IterativeDepthSearch.currentDepth += 1
-
-    choices.head
-//    val choice =  weightedChoice(choices, totalW) //calling random for now
-//    choice
+    val choice =  weightedChoice(choices, totalW) //calling random for now
+    choice
 
   }
 
