@@ -1,6 +1,7 @@
 package modbat.mbt
 
 import modbat.dsl.Transition
+import trie.Trie
 
 import scala.collection.mutable.Set;
 
