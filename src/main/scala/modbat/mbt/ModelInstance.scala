@@ -449,7 +449,7 @@ class ModelInstance (val mbt: MBT, val model: Model,
     }
     val successorTrs =
        transitions.toList.filter (t => !t.isSynthetic &&
-         			  t.origin == currentState)
+         			  t.origin == currentState)   //Nour: return all outgoing transition
 
     if (mbt.log.isLogging(Log.Debug)) {
       for (trans <- successorTrs) {

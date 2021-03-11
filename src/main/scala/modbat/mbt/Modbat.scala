@@ -125,6 +125,7 @@ class Modbat(val mbt: MBT) {
     Console.withErr(err) {
       Console.withOut(out) {
         val model = mbt.launch(null)
+        //if(mbt.config.) Nour: call create the graph method
         val result = exploreModel(model)  //Nour
         mbt.cleanup()
         mbt.log.out = origOut
@@ -511,7 +512,7 @@ class Modbat(val mbt: MBT) {
             timesVisited.getOrElseUpdate(RecordedState(m, s.dest), 0)
             + " times.")
       }
-      val limit = mbt.config.loopLimit
+      val limit = mbt.config.loopLimit // Nour: like depth
       if ((limit != 0) &&
           (timesVisited.getOrElseUpdate(RecordedState(m, s.dest), 0)
             >= limit)) {
@@ -588,63 +589,51 @@ class Modbat(val mbt: MBT) {
     // how to make sure that this methods will be called until this method return null (what is the req to stop?)
     val depth = 5;
 
+    //todo 1-  where to call finder, need to have graph,
+    //todo 2-  where Can I get the graph from?
+    /*
+    ideas:
 
-//    if(IterativeDepthSearch.workList.isEmpty)
-//    {
-//      //make sure curre t depyh = 0
-//      val src = choices.head._1.initialState; //I don't need to add this to the list
-//
-//      // genrate worklist for current depth
-//      for (oneChoice <- choices)
-//      {
-//        val transition = oneChoice._2
-//        // generate path from this node until end while paying attention to the depth
-//        IterativeDepthSearch.generatePathFromCurrentTransistion(transition)
-//
-//        //...  here src will be used
-//        // "src, next, next, next, ..., up to current depth"
-//
-//      }
-//
-//
-//
-//
-//
-//
-//    }
-//
-//
-//
-//
-//    //probably no else statements
-//    else // pick one option from list
-//    {
-//      var currentDepth = IterativeDepthSearch.currentDepth;
-//
-//      if (currentDepth == depth)
-//        return choices.head //to do: return nothing
-//        //return null
-//
-//      var choiceToReturn = null
-//      if(currentDepth < depth )
-//      {
-//
-//        //pick one
-//        val res = IterativeDepthSearch.workList.head;  // 1, 1, 2
-//
-//        IterativeDepthSearch.workList.drop(1); // 1 here is the number of droped item and not index //make sure that the set is mutable otherwise save the new worklist eahch time
-//        IterativeDepthSearch.done.add(res);
-//
-//
-//
-//      }
-//    }
-//
-//
-//
-//
-//    IterativeDepthSearch.currentDepth += 1
-//    choices.head
+    - idea 1:
+    if (transition.destination.isLeaf())
+        choose this and set this transition as visited
+    else if (transition.destination.outgoingTransition()  are all visited)
+         set as visited and choose another one  //todo problem what if this is the last one (all the same level branches has already been generated
+    else // if (it is a transition in the beginning or middle of operation)
+         choose the first unvisited one
+
+    - idea 2:
+    if (transition.destination.isLeaf())
+        choose this and set this transition as visited
+        get the parent that has already been saved in the Trie and check of all these leaves are visited set the parent as visited too
+        repeat checking a parent until reaching a parent that has at least one unvisitied node
+
+    //todo then we don't need the 2nd if statement here
+    else if (transition.destination.outgoingTransition()  are all visited)
+         set as visited and choose another one
+    else // if (it is a transition in the beginning or middle of operation)
+         choose the first unvisited one
+
+
+
+     all these ideas has problem that I need to store the parent some how each time I make a choice,
+     // but maybe I  don't need to store the whole path, maybe it is enogh with having a field in iterative search that
+     // store the current and the parent and the depth. each time we make a choice we we set parent = current and current = newChoice
+
+     // However the parent solution will be a problem when not allowing loops  ......
+     // or maybe I need to make the RawTrieNode to store the parent and depth but not to 'equal' or 'hash' with them
+
+
+     or maybe do it in the opposite way:
+     keep track as said in iterative search in the trie. and getchoose their one option and return the choice that is stored inside
+     the trieNode data (the transition).
+     or remove from trie when visited => increase memory effieciency
+
+     // George comment: the problem is with finding a new way, go to another branch
+
+     */
+
+
 
 
     val choice =  weightedChoice(choices, totalW) //calling random for now
@@ -908,11 +897,12 @@ class Modbat(val mbt: MBT) {
     */
   def executeSuccessorTrans
     : ((TransitionResult, RecordedTransition), PathResult) = {
-    var successors = allSuccessors(null)
+    var successors = allSuccessors(null) //return outgoing transitions of init state
     var allSucc = successors
     var totalW = totalWeight(successors)
     var backtracked = false // boolean var for backtracked case -Rui
-    while (!successors.isEmpty && (totalW > 0 || !mbt.transitionQueue.isEmpty)) {
+    while (!successors.isEmpty && (totalW > 0 || !mbt.transitionQueue.isEmpty))  // transitionQueue has things if there is a 'invokeTranisition' method inside the model (dsl, user file expalining the model)
+    {
       val localStoredRNGState = mbt.rng.asInstanceOf[CloneableRandom].clone
       val abortProbability = mbt.rng.nextFloat(false)
       if (abortProbability < mbt.config.abortProbability) {
@@ -933,7 +923,7 @@ class Modbat(val mbt: MBT) {
         val model = successor._1
         val trans = successor._2
         assert(!trans.isSynthetic)
-        val result = model.executeTransition(trans)
+        val result = model.executeTransition(trans) // Nour: execute transition here if we want to connect the trie with the graph
         checkForFieldUpdates(model, result, localStoredRNGState)
         result match {
           case (Ok(sameAgain: Boolean), _) => {

@@ -2,6 +2,7 @@ package modbat.mbt
 
 import modbat.config.ConfigMgr
 import modbat.config.Version
+import modbat.graphadaptor.GraphAdaptor
 import modbat.log.Log
 
 object Main {
@@ -67,6 +68,10 @@ object Main {
 
     val modbat = new Modbat(mbt)
     testData.modbat = modbat
+
+    // create graph
+    val graphAdaptor = new GraphAdaptor(config, mbt.launch(null))
+
     /* execute */
     config.mode match {
       case "dot" =>
