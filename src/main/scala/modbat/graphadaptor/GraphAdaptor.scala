@@ -1,13 +1,16 @@
 package modbat.graphadaptor
 
-import graph.Graph
-import graph.Node
-import modbat.dsl.Transition
+import graph.{Edge, Graph, Node}
+import modbat.dsl.{State, Transition}
 import modbat.mbt.{Configuration, ModelInstance}
+
+import java.io.{File, FileOutputStream, IOException, PrintStream}
+import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.collection.mutable
 
 class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
   // log that could be used for debugging purposes
-  // private val log = model.mbt.log
+  private val log = model.mbt.log
 
   /*
      "graph" is a public field representing the model instance.
@@ -19,6 +22,153 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
 
   // call createGraph (which is the starting point for creating a graph representation of the model)
   createGraph()
+
+  private def toLabel(origLabel: State): String = origLabel.toString.replace('/', '_')
+
+  /**
+    * Get a string representing the dot representation of transition.
+    */
+  private def getTransitionDotString(transition: Transition, transitionLabel: String = "",
+                                     style: String = "", color: String = ""): String = {
+    // add padding to label
+    val labelString: String = if (transitionLabel.isEmpty) {
+      transitionLabel
+    } else {
+      " " + transitionLabel + " "
+    }
+
+    val outgoingTransitions = model.transitions.filter(_.origin == transition.origin)
+    val totalCoverage = outgoingTransitions.map(_.coverage.count).sum
+
+    // coverage
+    val coverage: Double = if (totalCoverage == 0) {
+      0.0
+    } else {
+      transition.coverage.count * 100.0 / totalCoverage
+    }
+
+    val coverageString: String = if (coverage > 0.0) {
+      "\\[ " + "%2.1f".format(coverage) + " % \\]"
+    } else {
+      ""
+    }
+
+    // from-state and to-state
+    val fromState: String = toLabel(transition.origin)
+    val toState: String = toLabel(transition.dest)
+
+    // create the string representation of edge in dot format
+    val buf = new StringBuffer(
+      "  " + fromState + "\t-> " + toState + " [ label = \"" + labelString + coverageString + "\""
+    )
+
+    // add extra space before and after label because graphviz often
+    // puts label right next to edge (at least graphviz version 2.26.3)
+    if (style != "") {
+      buf.append(" style = \"" + style + "\"")
+    }
+    if (color != "") {
+      buf.append(" color = \"" + color + "\"")
+    }
+    if (coverage > 0.0) {
+      buf.append(" penwidth = \"3.0\"")
+    }
+    buf.append(" ];")
+
+    buf.toString
+  }
+
+
+  private def visitEdge(out: PrintStream, edge: Edge[StateData, EdgeData]): Unit = {
+    val transition: Transition = edge.getData.transition
+    val transitionLabel: String = edge.getData.transitionLabel
+    val transitionType: TransitionType = edge.getData.transitionType
+
+    transitionType match {
+      case NormalTransition(_) =>
+        // if the label of the current transition starts with "(", this means that the
+        // current transition OVERRIDEs another transition
+
+        if (transitionLabel.startsWith("(")) {
+          out.println(getTransitionDotString(transition, transitionLabel, style = "dashed"))
+        } else {
+          out.println(getTransitionDotString(transition, transitionLabel))
+        }
+
+      case ExpectedExceptionTransition(isDeterministic) if isDeterministic =>
+        out.println(getTransitionDotString(transition, transitionLabel, color = "red"))
+
+      case ExpectedExceptionTransition(isDeterministic) if !isDeterministic =>
+        out.println(getTransitionDotString(transition, transitionLabel, style = "dotted", color = "red"))
+    }
+  }
+
+  /**
+    * Print the graph represented by this GraphAdapter to a file of the given name.
+    */
+  def printGraphTo(fileName: String): Unit = {
+    val out: PrintStream = getPrintStream(fileName)
+    out.println("digraph model {")
+    out.println("  orientation = landscape;")
+    out.println("  graph [ rankdir = \"TB\", ranksep=\"0.4\", nodesep=\"0.2\" ];")
+    out.println("  node [ fontname = \"Helvetica\", fontsize=\"12.0\"," +
+      " margin=\"0.07\" ];")
+    out.println("  edge [ fontname = \"Helvetica\", fontsize=\"12.0\"," +
+      " margin=\"0.05\" ];")
+    // initial state
+    out.println("  \"\" [ shape = \"point\", height=\"0.1\" ];")
+
+    val rootNode: Node[StateData] = graph.getRoot
+    // print an edge to the root state
+    out.println("  \"\" -> " + toLabel(rootNode.getData.state))
+
+    // traverse the graph in a pre-order breadth first manner.
+
+    // create a queue and enqueue rootNode
+    val queue: mutable.Queue[Node[StateData]] = mutable.Queue(rootNode)
+    // create a discovered set of nodes and add the root to it
+    val discoveredNodes: mutable.Set[Node[StateData]] = mutable.Set(rootNode)
+
+    while (queue.nonEmpty) {
+      // dequeue node from queue
+      val currentNode: Node[StateData] = queue.dequeue()
+
+      // visit current node (the visit action of the current node is
+      // to visit every edge coming out from the current node and print it)
+      for (edge <- graph.edgesComingOutOfNode(currentNode).asScala) {
+        visitEdge(out, edge)
+      }
+
+      // enqueue all non-discovered destination nodes of the current node, and
+      // mark each enqueued node as discovered. This is important to avoid
+      // visiting the same destination node multiple times in case of double edges
+      for (edge <- graph.edgesComingOutOfNode(currentNode).asScala) {
+        val destinationNode: Node[StateData] = edge.getDestination
+        // if destination node is not discovered
+        if (!discoveredNodes.contains(destinationNode)) {
+          // mark destination node as discovered
+          discoveredNodes.add(destinationNode)
+          // enqueue destination node
+          queue.enqueue(destinationNode)
+        }
+      }
+    }
+
+    out.println("}")
+    out.close()
+  }
+
+  private def getPrintStream(outputFileName: String): PrintStream = {
+    val pathOfOutputFile: String = config.dotDir + File.separatorChar + outputFileName
+    try {
+      new PrintStream(new FileOutputStream(pathOfOutputFile), true, "UTF-8")
+    } catch {
+      case ioe: IOException =>
+        log.error("Cannot open file " + pathOfOutputFile + ":")
+        log.error(ioe.getMessage)
+        throw ioe
+    }
+  }
 
   /**
     * Get transition label of "transition" given the configuration and
@@ -115,4 +265,29 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
       }
     }
   }
+
+  //  def dotify(coverage: Boolean = false): Unit = {
+  //    val ret = init
+  //    out.println("digraph model {")
+  //    out.println("  orientation = landscape;")
+  //    out.println("  graph [ rankdir = \"TB\", ranksep=\"0.4\", nodesep=\"0.2\" ];")
+  //    out.println("  node [ fontname = \"Helvetica\", fontsize=\"12.0\"," +
+  //      " margin=\"0.07\" ];")
+  //    out.println("  edge [ fontname = \"Helvetica\", fontsize=\"12.0\"," +
+  //      " margin=\"0.05\" ];")
+  //    // initial state
+  //    out.println("  \"\" [ shape = \"point\", height=\"0.1\" ];")
+  //    out.println("  \"\" -> " + toLabel(model.initialState))
+  //    for (tr <- model.transitions) {
+  //      if (!tr.isSynthetic) {
+  //        dotifyEdge(tr)
+  //
+  //        for (exc <- tr.nonDetExceptions) {
+  //          val label = exc.exception.toString.replace("Exception", "Exc.")
+  //          printTrans(exc.target, label, style = "dotted", color = "red")
+  //        }
+  //      }
+  //    }
+  //    out.println("}")
+  //  }
 }

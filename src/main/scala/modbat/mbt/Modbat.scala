@@ -8,16 +8,10 @@ import java.lang.reflect.Modifier
 import java.lang.RuntimeException
 import java.net.URL
 import java.util.BitSet
-
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.HashSet
 import scala.collection.mutable.ListBuffer
-import modbat.cov.{
-  StateCoverage,
-  TransitionCoverage,
-  TransitionRewardTypes,
-  Trie
-}
+import modbat.cov.{StateCoverage, TransitionCoverage, TransitionRewardTypes, Trie}
 import modbat.dsl.Action
 import modbat.dsl.Init
 import modbat.dsl.Shutdown
@@ -32,6 +26,7 @@ import modbat.util.FieldUtil
 import scala.math._
 import scala.util.Random
 import com.miguno.akka.testing.VirtualTime
+import modbat.graphadaptor.GraphAdaptor
 
 class NoTaskException(message: String = null, cause: Throwable = null)
     extends RuntimeException(message, cause)
@@ -465,6 +460,10 @@ class Modbat(val mbt: MBT) {
 
   def exploreModel(model: ModelInstance) = {
     mbt.log.debug("--- Exploring model ---")
+    // create the graph - George and Nour
+    val graph = new GraphAdaptor(mbt.config, model)
+    graph.printGraphTo(model.className + ".dot")
+
     timesVisited.clear()
     executedTransitions.clear()
     pathInfoRecorder.clear() // clear path information - Rui
@@ -791,6 +790,7 @@ class Modbat(val mbt: MBT) {
     executeSuccessorTrans match {
       case ((Finished, _), _) => {
         insertPathInfoInTrie
+        // George: cover using pathInfoRecorder
         (Ok(), null)
       }
       case (result: (TransitionResult, RecordedTransition),
@@ -834,7 +834,7 @@ class Modbat(val mbt: MBT) {
         val trans = successor._2
         assert(!trans.isSynthetic)
         val result = model.executeTransition(trans)
-        checkForFieldUpdates(model, result, localStoredRNGState)
+        checkForFieldUpdates(model, result, localStoredRNGState) // TODO george: look here for history update
         result match {
           case (Ok(sameAgain: Boolean), _) => {
             backtracked = false
