@@ -461,8 +461,14 @@ class Modbat(val mbt: MBT) {
   def exploreModel(model: ModelInstance) = {
     mbt.log.debug("--- Exploring model ---")
     // create the graph - George and Nour
-    val graph = new GraphAdaptor(mbt.config, model)
-    graph.printGraphTo(model.className + ".dot")
+
+    // get first instance of model to add the graph to it
+    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
+    if (firstModelInstance.graph == null) {
+      val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
+      graph.printGraphTo(firstModelInstance.className + ".dot")
+      firstModelInstance.graph = graph
+    }
 
     timesVisited.clear()
     executedTransitions.clear()

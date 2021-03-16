@@ -3,7 +3,6 @@ package modbat.graphadaptor
 import graph.{Edge, Graph, Node}
 import modbat.dsl.{State, Transition}
 import modbat.mbt.{Configuration, ModelInstance}
-
 import java.io.{File, FileOutputStream, IOException, PrintStream}
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
@@ -135,14 +134,23 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
 
       // visit current node (the visit action of the current node is
       // to visit every edge coming out from the current node and print it)
-      for (edge <- graph.edgesComingOutOfNode(currentNode).asScala) {
+
+      // TODO: modify graph library to not return null (in case of no outgoing edges) and record all nodes
+      val outgoingEdgesOrNull = graph.edgesComingOutOfNode(currentNode) // if no neighbors exist, return null
+      val outgoingEdges = if (outgoingEdgesOrNull == null) {
+        List()
+      } else {
+        graph.edgesComingOutOfNode(currentNode).asScala
+      }
+
+      for (edge <- outgoingEdges) {
         visitEdge(out, edge)
       }
 
       // enqueue all non-discovered destination nodes of the current node, and
       // mark each enqueued node as discovered. This is important to avoid
       // visiting the same destination node multiple times in case of double edges
-      for (edge <- graph.edgesComingOutOfNode(currentNode).asScala) {
+      for (edge <- outgoingEdges) {
         val destinationNode: Node[StateData] = edge.getDestination
         // if destination node is not discovered
         if (!discoveredNodes.contains(destinationNode)) {
@@ -155,13 +163,14 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
     }
 
     out.println("}")
+    out.flush()
     out.close()
   }
 
   private def getPrintStream(outputFileName: String): PrintStream = {
     val pathOfOutputFile: String = config.dotDir + File.separatorChar + outputFileName
     try {
-      new PrintStream(new FileOutputStream(pathOfOutputFile), true, "UTF-8")
+      new PrintStream(new FileOutputStream(pathOfOutputFile), false, "UTF-8")
     } catch {
       case ioe: IOException =>
         log.error("Cannot open file " + pathOfOutputFile + ":")

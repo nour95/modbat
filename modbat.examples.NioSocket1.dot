@@ -1,0 +1,28 @@
+digraph model {
+  orientation = landscape;
+  graph [ rankdir = "TB", ranksep="0.4", nodesep="0.2" ];
+  node [ fontname = "Helvetica", fontsize="12.0", margin="0.07" ];
+  edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
+  "" [ shape = "point", height="0.1" ];
+  "" -> reset
+  reset	-> open [ label = " reset => open \[ 100.0 % \]" penwidth = "3.0" ];
+  open	-> open [ label = " open => open \[ 19.8 % \]" penwidth = "3.0" ];
+  open	-> connected [ label = " open => connected \[ 16.7 % \]" penwidth = "3.0" ];
+  open	-> maybeconnected [ label = " open => maybeconnected \[ 2.4 % \]" penwidth = "3.0" ];
+  open	-> err [ label = " NoConnectionPendingException \[ 26.2 % \]" color = "red" penwidth = "3.0" ];
+  open	-> err [ label = " NotYetConnectedException \[ 11.1 % \]" color = "red" penwidth = "3.0" ];
+  open	-> closed [ label = " open => closed \[ 23.8 % \]" penwidth = "3.0" ];
+  connected	-> err [ label = " AlreadyConnectedException \[ 30.6 % \]" color = "red" penwidth = "3.0" ];
+  connected	-> connected [ label = " connected => connected (1) \[ 27.8 % \]" penwidth = "3.0" ];
+  connected	-> connected [ label = " connected => connected (2) \[ 11.1 % \]" penwidth = "3.0" ];
+  connected	-> closed [ label = " connected => closed \[ 30.6 % \]" penwidth = "3.0" ];
+  maybeconnected	-> maybeconnected [ label = " maybeconnected => maybeconnected (1) " ];
+  maybeconnected	-> connected [ label = " maybeconnected => connected " ];
+  maybeconnected	-> maybeconnected [ label = " maybeconnected => maybeconnected (2) " ];
+  maybeconnected	-> connected [ label = " (maybeconnected => maybeconnected (2)) \[ 25.0 % \]" style = "dashed" penwidth = "3.0" ];
+  maybeconnected	-> err [ label = " ConnectionPendingException " color = "red" ];
+  maybeconnected	-> err [ label = " NotYetConnectedException \[ 25.0 % \]" color = "red" penwidth = "3.0" ];
+  maybeconnected	-> closed [ label = " maybeconnected => closed \[ 25.0 % \]" penwidth = "3.0" ];
+  closed	-> closed [ label = " closed => closed \[ 52.3 % \]" penwidth = "3.0" ];
+  closed	-> err [ label = " ClosedChannelException \[ 47.7 % \]" color = "red" penwidth = "3.0" ];
+}

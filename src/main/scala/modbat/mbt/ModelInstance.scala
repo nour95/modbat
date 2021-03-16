@@ -3,13 +3,11 @@ package modbat.mbt
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.matching.Regex
-
 import modbat.RequirementFailedException
 import modbat.dsl.Action
 import modbat.dsl.Model
@@ -29,6 +27,7 @@ import modbat.trace.TracedFields
 import modbat.trace.RecordedTransition
 import modbat.trace.TransitionResult
 import modbat.dsl.Weight
+import modbat.graphadaptor.GraphAdaptor
 import modbat.log.Log
 
 class ModelInstance (val mbt: MBT, val model: Model,
@@ -47,6 +46,9 @@ class ModelInstance (val mbt: MBT, val model: Model,
   @volatile var staying = false
   val mIdx = mbt.launchedModels.count(_.className.equals(className)) // mIdx gives the ID of the model -Rui
   def name = className + "-" + (mIdx + 1)
+
+  // graph instance of model - Nour and George
+  var graph: GraphAdaptor = _
 
   /* isChild is true when coverage information of initial instance is
    * to be re-used; this is the case when a child is launched, but also
