@@ -5,6 +5,7 @@ import modbat.dsl.State
 import trie.Trie
 import generator.Finder
 import modbat.graphadaptor.{EdgeData, StateData}
+import trie.node.TrieNode
 
 import scala.collection.mutable.Set;
 
@@ -40,11 +41,47 @@ object IterativeDepthSearch
 //  }
 
 
+  /*
+  // solution to a data structure that can extend with time is :
+    1- run exhuastive search mutliple time until the number of the nodes in the graph don't change?
+    2- implement a super an un effeicient allgorithm that each time we dicovered some guys
+
+
+  */
+
   def generatePathFromCurrentTransistion(transition: Transition) =
   {
     workList.add(transition);
     // find this transition children and then add them to the worklist. change wroklit to be list of pathes that have transitions
     //....
+
+  }
+
+//  def markPath() =
+//  {
+//    //todo what should I do with the rawTrieNode (have a parent inside without using it feels duplication? merge the equal method??)
+//    var currentEdge : TrieNode[EdgeData] = trie.getRoot;
+//
+//    while(currentEdge.isVisited() != true )
+//    {
+//      if(trie.isLeaf(currentEdge))
+//      {
+//        // mark this and all the parent classes
+//        trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentEdge); // todo this need to mark the transition int he graph too
+//      }
+//
+//      else
+//      {
+//        currentEdge = trie.findUnvisitedNode(currentEdge);
+//       if (currentEdge == null)
+//         throw Exception("something wrong happened ");
+//
+//      }
+//
+//
+//
+//    }
+
 
   }
 
