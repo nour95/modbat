@@ -466,7 +466,7 @@ class Modbat(val mbt: MBT) {
     val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
     if (firstModelInstance.graph == null) {
       val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
-      graph.printGraphTo(firstModelInstance.className + ".dot")
+      graph.printGraphTo(firstModelInstance.className + "_graph.dot")
       firstModelInstance.graph = graph
     }
 

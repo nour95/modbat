@@ -1,10 +1,11 @@
 package modbat.graphadaptor
 
-import graph.{Edge, Graph, Node}
 import modbat.dsl.{State, Transition}
+import modbat.graph.{Edge, Graph, Node}
 import modbat.mbt.{Configuration, ModelInstance}
+
 import java.io.{File, FileOutputStream, IOException, PrintStream}
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.collection.JavaConverters.{asScalaBufferConverter, asScalaSetConverter}
 import scala.collection.mutable
 
 class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
@@ -17,7 +18,7 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
      - "graph" has an initial number of nodes of "model.states.size" which is allowed
        to grow by adding more states and edges.
    */
-  val graph: Graph[StateData, EdgeData] = new Graph(new Node(new StateData(model.initialState)), model.states.size)
+  val graph: Graph[StateData, EdgeData] = new Graph(new Node(new StateData(model.initialState)))
 
   // call createGraph (which is the starting point for creating a graph representation of the model)
   createGraph()
@@ -108,7 +109,7 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
   def printGraphTo(fileName: String): Unit = {
     val out: PrintStream = getPrintStream(fileName)
     out.println("digraph model {")
-    out.println("  orientation = landscape;")
+//    out.println("  orientation = landscape;")
     out.println("  graph [ rankdir = \"TB\", ranksep=\"0.4\", nodesep=\"0.2\" ];")
     out.println("  node [ fontname = \"Helvetica\", fontsize=\"12.0\"," +
       " margin=\"0.07\" ];")
@@ -123,43 +124,26 @@ class GraphAdaptor(val config: Configuration, val model: ModelInstance) {
 
     // traverse the graph in a pre-order breadth first manner.
 
-    // create a queue and enqueue rootNode
-    val queue: mutable.Queue[Node[StateData]] = mutable.Queue(rootNode)
     // create a discovered set of nodes and add the root to it
     val discoveredNodes: mutable.Set[Node[StateData]] = mutable.Set(rootNode)
 
-    while (queue.nonEmpty) {
-      // dequeue node from queue
-      val currentNode: Node[StateData] = queue.dequeue()
+    // graph edges
+    val edges: mutable.Buffer[Edge[StateData, EdgeData]] = graph.getAllEdges.asScala
 
+    for (edge <- edges) {
       // visit current node (the visit action of the current node is
       // to visit every edge coming out from the current node and print it)
+      visitEdge(out, edge)
 
-      // TODO: modify graph library to not return null (in case of no outgoing edges) and record all nodes
-      val outgoingEdgesOrNull = graph.edgesComingOutOfNode(currentNode) // if no neighbors exist, return null
-      val outgoingEdges = if (outgoingEdgesOrNull == null) {
-        List()
-      } else {
-        graph.edgesComingOutOfNode(currentNode).asScala
-      }
+      // add source node and destination node to discovered nodes
+      discoveredNodes.add(edge.getSource)
+      discoveredNodes.add(edge.getDestination)
+    }
 
-      for (edge <- outgoingEdges) {
-        visitEdge(out, edge)
-      }
-
-      // enqueue all non-discovered destination nodes of the current node, and
-      // mark each enqueued node as discovered. This is important to avoid
-      // visiting the same destination node multiple times in case of double edges
-      for (edge <- outgoingEdges) {
-        val destinationNode: Node[StateData] = edge.getDestination
-        // if destination node is not discovered
-        if (!discoveredNodes.contains(destinationNode)) {
-          // mark destination node as discovered
-          discoveredNodes.add(destinationNode)
-          // enqueue destination node
-          queue.enqueue(destinationNode)
-        }
-      }
+    // print all unreachable nodes
+    val undiscoveredNodes = graph.getAllNodes.asScala.diff(discoveredNodes)
+    for (undiscoveredNode <- undiscoveredNodes) {
+      out.println("  " + toLabel(undiscoveredNode.getData.state))
     }
 
     out.println("}")
