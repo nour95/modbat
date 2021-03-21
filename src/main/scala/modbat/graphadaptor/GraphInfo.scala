@@ -1,7 +1,7 @@
 package modbat.graphadaptor
 
-import graph.Node
 import modbat.dsl.{State, Transition}
+import modbat.graph.Node
 
 sealed trait TransitionType
 
@@ -22,6 +22,7 @@ class StateData(val state: State) {
       // TODO GR_NR: either the state reference is compared (globally) or
       // state names locally
       this.state.name.equals(that.state.name)
+//      this.state == that.state
     }
   }
 
@@ -43,6 +44,7 @@ class EdgeData(val transitionLabel: String, val transitionType: TransitionType, 
 
       // TODO GR_NR:  within the model, transition-id is unique globally
       this.transitionId.equals(that.transitionId)
+//      this.transition == that.transition
     }
   }
 

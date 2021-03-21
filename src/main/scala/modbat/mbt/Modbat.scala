@@ -8,16 +8,10 @@ import java.lang.reflect.Modifier
 import java.lang.RuntimeException
 import java.net.URL
 import java.util.BitSet
-
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.HashSet
 import scala.collection.mutable.ListBuffer
-import modbat.cov.{
-  StateCoverage,
-  TransitionCoverage,
-  TransitionRewardTypes,
-  Trie
-}
+import modbat.cov.{StateCoverage, TransitionCoverage, TransitionRewardTypes, Trie}
 import modbat.dsl.Action
 import modbat.dsl.Init
 import modbat.dsl.Shutdown
@@ -32,6 +26,7 @@ import modbat.util.FieldUtil
 import scala.math._
 import scala.util.Random
 import com.miguno.akka.testing.VirtualTime
+import modbat.graphadaptor.GraphAdaptor
 
 class NoTaskException(message: String = null, cause: Throwable = null)
     extends RuntimeException(message, cause)
@@ -477,6 +472,16 @@ class Modbat(val mbt: MBT) {
     */
   def exploreModel(model: ModelInstance) = {
     mbt.log.debug("--- Exploring model ---")
+    // create the graph - George and Nour
+
+    // get first instance of model to add the graph to it
+    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
+    if (firstModelInstance.graph == null) {
+      val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
+      graph.printGraphTo(firstModelInstance.className + "_graph.dot")
+      firstModelInstance.graph = graph
+    }
+
     timesVisited.clear()
     executedTransitions.clear()
     pathInfoRecorder.clear() // clear path information - Rui
@@ -874,6 +879,7 @@ class Modbat(val mbt: MBT) {
     executeSuccessorTrans match {  //Nour: can I use the  path info or not
       case ((Finished, _), _) => {
         insertPathInfoInTrie
+        // George: cover using pathInfoRecorder
         (Ok(), null)
       }
       case (result: (TransitionResult, RecordedTransition),
@@ -923,7 +929,8 @@ class Modbat(val mbt: MBT) {
         val model = successor._1
         val trans = successor._2
         assert(!trans.isSynthetic)
-        val result = model.executeTransition(trans) // Nour: execute transition here if we want to connect the trie with the graph
+
+        val result = model.executeTransition(trans)  // Nour: execute transition here if we want to connect the trie with the graph
         checkForFieldUpdates(model, result, localStoredRNGState)
         result match {
           case (Ok(sameAgain: Boolean), _) => {
