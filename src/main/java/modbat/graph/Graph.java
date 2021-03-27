@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //adapted from https://algorithms.tutorialhorizon.com/weighted-graph-implementation-java/
-public class Graph<NT, ET> {
+public class Graph<NT, ET>
+{
     private Node<NT> root;
     private final Map<Node<NT>, List<Edge<NT, ET>>> adjacencyMap;
 

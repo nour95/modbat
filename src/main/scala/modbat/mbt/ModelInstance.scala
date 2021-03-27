@@ -3,6 +3,7 @@ package modbat.mbt
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
@@ -27,7 +28,9 @@ import modbat.trace.TracedFields
 import modbat.trace.RecordedTransition
 import modbat.trace.TransitionResult
 import modbat.dsl.Weight
-import modbat.graphadaptor.GraphAdaptor
+import modbat.graph.Edge
+import modbat.graph.trie.Trie
+import modbat.graphadaptor.{EdgeData, GraphAdaptor, StateData}
 import modbat.log.Log
 
 class ModelInstance (val mbt: MBT, val model: Model,
@@ -49,6 +52,7 @@ class ModelInstance (val mbt: MBT, val model: Model,
 
   // graph instance of model - Nour and George
   var graph: GraphAdaptor = _
+  var exhaustiveTrie: Trie[Edge[StateData, EdgeData]] = _ //todo ??
 
   /* isChild is true when coverage information of initial instance is
    * to be re-used; this is the case when a child is launched, but also

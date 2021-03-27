@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier
 import java.lang.RuntimeException
 import java.net.URL
 import java.util.BitSet
+
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.HashSet
 import scala.collection.mutable.ListBuffer
@@ -26,7 +27,8 @@ import modbat.util.FieldUtil
 import scala.math._
 import scala.util.Random
 import com.miguno.akka.testing.VirtualTime
-import modbat.graphadaptor.GraphAdaptor
+import modbat.graph.{Edge, TrieBuilder}
+import modbat.graphadaptor.{EdgeData, GraphAdaptor, StateData}
 
 class NoTaskException(message: String = null, cause: Throwable = null)
     extends RuntimeException(message, cause)
@@ -480,7 +482,21 @@ class Modbat(val mbt: MBT) {
       val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
       graph.printGraphTo(firstModelInstance.className + "_graph.dot")
       firstModelInstance.graph = graph
+
+      // Nour: generate the trie
+      if(mbt.config.search == "exhaustive")
+      {
+        val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config); //todo why do you take the model and not the firstmodel?
+        // todo make this as a global field in this class??
+
+        iterativeSearch.printTrieTo(firstModelInstance.className + "_trie.dot")
+
+
+        //firstModelInstance.exhaustiveTrie = exhaustiveTrie;
+      }
+
     }
+
 
     timesVisited.clear()
     executedTransitions.clear()
@@ -589,10 +605,23 @@ class Modbat(val mbt: MBT) {
 
   def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double) =
   {
-    //assumptions: choices has the same source (ask Cyrille) or is it a random things.
-    //syntactic state not semantic state (Think about the choose keyword in th e modebat DSL)
-    // how to make sure that this methods will be called until this method return null (what is the req to stop?)
-    val depth = 5;
+
+    //todo for now it is null
+//    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(null, sys.error("Illegal state"))
+//
+//    if (firstModelInstance.exhaustiveTrie == null)
+//      throw new Exception("???")
+//
+//    val trie = firstModelInstance.exhaustiveTrie;
+
+
+
+
+
+
+
+
+
 
     //todo 1-  where to call finder, need to have graph,
     //todo 2-  where Can I get the graph from?
@@ -876,7 +905,7 @@ class Modbat(val mbt: MBT) {
     * calls executeSuccessorTrans (and stores result)
     */
   def exploreSuccessors: (TransitionResult, RecordedTransition) = {
-    executeSuccessorTrans match {  //Nour: can I use the  path info or not
+    executeSuccessorTrans match {  //Nour: here
       case ((Finished, _), _) => {
         insertPathInfoInTrie
         // George: cover using pathInfoRecorder
