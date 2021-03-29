@@ -38,6 +38,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     firstModelInstance.exhaustiveTrie = trie;
 
     currentTrieNode = trie.getRoot
+    moveOnce() // get first real edge to return
   }
 
 
@@ -51,6 +52,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     if (leafReached == true)
     {
       currentTrieNode =  trie.getRoot;
+      moveOnce()
       leafReached = false;
       return null;  // todo make sure null here will not backtrack.
     }
@@ -69,10 +71,18 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
         then we have maybe dicovered a choice transition => run random search ?? (and increase depth??)
     */
 
+  def restartFromRoot(): Unit =
+  {
+    trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentTrieNode);
+    currentTrieNode =  trie.getRoot;
+    moveOnce()
+  }
+
 
   def moveOnce(): Unit =
   {
     val child = trie.findUnvisitedNode(currentTrieNode)
+
     if (child == null) {
       leafReached = true
       trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentTrieNode);

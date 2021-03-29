@@ -99,6 +99,9 @@ class Modbat(val mbt: MBT) {
   var trie = new Trie(mbt)
   private var pathInfoRecorder = new ListBuffer[PathInfo]
 
+  private var iterativeDepthSearch : IterativeDepthSearch = _
+
+
   if (mbt.config.init) {
     mbt.invokeAnnotatedStaticMethods(classOf[Init], null)
   }
@@ -428,9 +431,9 @@ class Modbat(val mbt: MBT) {
       randomSeed = getRandomSeed
       val seed = randomSeed.toHexString
       failed match {
-        case 0 => mbt.log.out.printf("%8d %16s", Integer.valueOf(i), seed)
-        case 1 => mbt.log.out.printf("%8d %16s, one test failed.", Integer.valueOf(i), seed)
-        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.", Integer.valueOf(i), seed, Integer.valueOf(failed))
+        case 0 => mbt.log.out.printf("%8d %16s%n", Integer.valueOf(i), seed)
+        case 1 => mbt.log.out.printf("%8d %16s, one test failed.%n", Integer.valueOf(i), seed)
+        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.%n", Integer.valueOf(i), seed, Integer.valueOf(failed))
       }
       logFile = mbt.config.logPath + "/" + seed + ".log"
       errFile = mbt.config.logPath + "/" + seed + ".err"
@@ -486,13 +489,10 @@ class Modbat(val mbt: MBT) {
       // Nour: generate the trie
       if(mbt.config.search == "exhaustive")
       {
-        val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config); //todo why do you take the model and not the firstmodel?
-        // todo make this as a global field in this class??
-
+        val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config);
+        this.iterativeDepthSearch = iterativeSearch;
         iterativeSearch.printTrieTo(firstModelInstance.className + "_trie.dot")
 
-
-        //firstModelInstance.exhaustiveTrie = exhaustiveTrie;
       }
 
     }
@@ -603,75 +603,31 @@ class Modbat(val mbt: MBT) {
     }
   }
 
-  def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double) =
+  def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double):(ModelInstance, Transition) =
   {
 
-    //todo for now it is null
-//    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(null, sys.error("Illegal state"))
-//
-//    if (firstModelInstance.exhaustiveTrie == null)
-//      throw new Exception("???")
-//
-//    val trie = firstModelInstance.exhaustiveTrie;
+
+    val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
+
+    if(transitionFromTrie == null) { //todo not sure
+      origOut.println("A null has been returned") //todo
+      return null;
+    }
 
 
 
+    for(choice <- choices)
+    {
+      if(choice._2.idx == transitionFromTrie.idx) {
+        origOut.println("choice: " + transitionFromTrie + " has been chosen")
+        iterativeDepthSearch.moveOnce()
+        return choice
+      };
+    }
 
-
-
-
-
-
-
-    //todo 1-  where to call finder, need to have graph,
-    //todo 2-  where Can I get the graph from?
-    /*
-    ideas:
-
-    - idea 1:
-    if (transition.destination.isLeaf())
-        choose this and set this transition as visited
-    else if (transition.destination.outgoingTransition()  are all visited)
-         set as visited and choose another one  //todo problem what if this is the last one (all the same level branches has already been generated
-    else // if (it is a transition in the beginning or middle of operation)
-         choose the first unvisited one
-
-    - idea 2:
-    if (transition.destination.isLeaf())
-        choose this and set this transition as visited
-        get the parent that has already been saved in the Trie and check of all these leaves are visited set the parent as visited too
-        repeat checking a parent until reaching a parent that has at least one unvisitied node
-
-    //todo then we don't need the 2nd if statement here
-    else if (transition.destination.outgoingTransition()  are all visited)
-         set as visited and choose another one
-    else // if (it is a transition in the beginning or middle of operation)
-         choose the first unvisited one
-
-
-
-     all these ideas has problem that I need to store the parent some how each time I make a choice,
-     // but maybe I  don't need to store the whole path, maybe it is enogh with having a field in iterative search that
-     // store the current and the parent and the depth. each time we make a choice we we set parent = current and current = newChoice
-
-     // However the parent solution will be a problem when not allowing loops  ......
-     // or maybe I need to make the RawTrieNode to store the parent and depth but not to 'equal' or 'hash' with them
-
-
-     or maybe do it in the opposite way:
-     keep track as said in iterative search in the trie. and getchoose their one option and return the choice that is stored inside
-     the trieNode data (the transition).
-     or remove from trie when visited => increase memory effieciency
-
-     // George comment: the problem is with finding a new way, go to another branch
-
-     */
-
-
-
-
-    val choice =  weightedChoice(choices, totalW) //calling random for now
-    choice
+    // else if the current choice didn't exist in the list from above => run random search
+    val randomChoice =  weightedChoice(choices, totalW)
+    return randomChoice
 
   }
 
@@ -953,8 +909,22 @@ class Modbat(val mbt: MBT) {
       var successor: (ModelInstance, Transition) = null
       //successor = invocationSuccessor.getOrElse(weightedChoice(successors, totalW))
       // TODO: try bandit by calling makeChoice
-      successor = invocationSuccessor.getOrElse(makeChoice(successors, totalW)) //Nour: makechoice is here, and it looks like I have a copy of the recorded trensition
-      if (successor != null) {
+      val tempSuccessor = invocationSuccessor
+      if (tempSuccessor.isEmpty)
+        successor = makeChoice(successors, totalW) //Nour: makechoice is here, and it looks like I have a copy of the recorded trensition
+      else
+        successor = tempSuccessor.get;
+
+      if(mbt.config.search == "exhaustive" && successor == null )
+      {
+        mbt.log.debug("Reach a leaf node in exhaustive search.")
+        checkIfPendingModels
+        return ((Finished, null), null)
+      }
+
+
+      //successor = invocationSuccessor.getOrElse(x)
+      //if (successor != null || (mbt.config.search == "exhaustive" && successor == null )) {
         val model = successor._1
         val trans = successor._2
         assert(!trans.isSynthetic)
@@ -979,9 +949,14 @@ class Modbat(val mbt: MBT) {
               mbt.log.debug("Model " + model.name + " has terminated.")
               unblockJoiningModels(model)
             }
-            if (sameAgain) {
+            if(mbt.config.search == "exhaustive" && successor == null) { //todo make sure
+              successors = List()
+            }
+            else if (sameAgain)
+            {
               successors = allSuccessors(model)
-            } else {
+            }
+            else {
               successors = allSuccessors(null)
             }
             val observerResult = updateObservers
@@ -1008,7 +983,11 @@ class Modbat(val mbt: MBT) {
             // todo: update the reward for the backtracked transition - Rui
             trans.averageReward
               .updateAverageReward(TransitionRewardTypes.BacktrackTransReward)
-            successors = successors filterNot (_ == successor)
+
+            if(mbt.config.search == "exhaustive" && successor == null)
+              successors = List()
+            else
+              successors = successors filterNot (_ == successor)
           }
           case (t: TransitionResult, _) => {
             // todo: update the reward for the failed transition - Rui
@@ -1022,7 +1001,7 @@ class Modbat(val mbt: MBT) {
         }
         storePathInfo(result, successor, backtracked, false)
         totalW = totalWeight(successors)
-      }
+     // }
     }
     if (successors.isEmpty && backtracked) {
       warnAboutPreconditions(allSucc, backtracked)
