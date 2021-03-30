@@ -15,13 +15,12 @@ import scala.collection.mutable.Set;
 class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance: ModelInstance, config: Configuration) //todo object or class
 {
 
-  var initialize = false;
-  var trie : Trie[Edge[StateData, EdgeData]] = _; //todo
-
+  var trie : Trie[Edge[StateData, EdgeData]] = _;
   var currentTrieNode: TrieNode[Edge[StateData, EdgeData]] = _;
-  var nextTrieNode: TrieNode[Edge[StateData, EdgeData]] = _; //todo switch this with the upper one
-  var depth = 0;
   var leafReached = false;
+
+  //var rootIsMarked = false;
+
 
   initializeExhaustiveTrie(graph, firstModelInstance, config)
 
@@ -73,6 +72,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
   def restartFromRoot(): Unit =
   {
+    leafReached = false
     trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentTrieNode);
     currentTrieNode =  trie.getRoot;
     moveOnce()
@@ -192,50 +192,6 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
 
 
-  //  def chooseTransition(): Transition =  //todo delete this
-//  {
-//
-//    val c1 : TrieNode[Edge[StateData, EdgeData]] = currentTrieNode;
-//    val c2 : Edge[StateData, EdgeData]           = currentTrieNode.getData
-//    val c3 : EdgeData                            = currentTrieNode.getData.getData
-//    val c4 : Transition                          = currentTrieNode.getData.getData.transition
-//
-//    if (! c1.isVisited && ! trie.isLeaf(c1))
-//      return c4; // go back to parent??
-//    else if(! c1.isVisited && trie.isLeaf(c1))
-//    {
-//      trie.markVisitedUpToTheFirstParentWithUnvisitedNode(c1); // todo this need to mark the transition int he graph too
-//
-//
-//      return c4
-//    }
-//    else
-//
-//
-//
-//    //currentTrieNode.getData.getData.transition
-//    c4
-//  }
-
-
-
-
-// EdgeData has the transition as a parameter (read the first line)
-
-  // todo with George later find a way to have the graph,
-  //  initial edge without head can be done easily here or in somewhere else,
-  // todo maybe dummy state
-//  def initializeTrie(trieType: Boolean ) =
-//  {
-//    if (initialize == false)
-//    {
-//      var finder: Finder[StateData, EdgeData]  = new Finder(trieType)
-//      trie = finder.runFinder()
-//
-//      initialize = true;
-//    }
-    // else log ?? todo
-//  }
 
 
   /*

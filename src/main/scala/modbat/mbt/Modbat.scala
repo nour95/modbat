@@ -891,7 +891,9 @@ class Modbat(val mbt: MBT) {
     var successors = allSuccessors(null) //return outgoing transitions of init state
     var allSucc = successors
     var totalW = totalWeight(successors)
+    val isExhaustiveSearch = mbt.config.search == "exhaustive"; //Nour
     var backtracked = false // boolean var for backtracked case -Rui
+
     while (!successors.isEmpty && (totalW > 0 || !mbt.transitionQueue.isEmpty))  // transitionQueue has things if there is a 'invokeTranisition' method inside the model (dsl, user file expalining the model)
     {
       val localStoredRNGState = mbt.rng.asInstanceOf[CloneableRandom].clone
@@ -915,9 +917,9 @@ class Modbat(val mbt: MBT) {
       else
         successor = tempSuccessor.get;
 
-      if(mbt.config.search == "exhaustive" && successor == null )
+      if(isExhaustiveSearch && successor == null )
       {
-        mbt.log.debug("Reach a leaf node in exhaustive search.")
+        mbt.log.debug("Reach a leaf node in exhaustive search.") //todo correct ??
         checkIfPendingModels
         return ((Finished, null), null)
       }
@@ -961,6 +963,8 @@ class Modbat(val mbt: MBT) {
             }
             val observerResult = updateObservers
             if (TransitionResult.isErr(observerResult)) {
+              if(isExhaustiveSearch)
+                this.iterativeDepthSearch.restartFromRoot();
               return ((observerResult, result._2),
                       new PathResult(result,
                                      successor,
@@ -969,6 +973,8 @@ class Modbat(val mbt: MBT) {
                                      true))
             }
             if (otherThreadFailed) {
+              if(isExhaustiveSearch)
+                this.iterativeDepthSearch.restartFromRoot();
               return ((ExceptionOccurred(mbt.externalException.toString), null),
                       new PathResult(result,
                                      successor,
@@ -984,7 +990,7 @@ class Modbat(val mbt: MBT) {
             trans.averageReward
               .updateAverageReward(TransitionRewardTypes.BacktrackTransReward)
 
-            if(mbt.config.search == "exhaustive" && successor == null)
+            if(isExhaustiveSearch && successor == null)
               successors = List()
             else
               successors = successors filterNot (_ == successor)
@@ -995,6 +1001,10 @@ class Modbat(val mbt: MBT) {
               .updateAverageReward(TransitionRewardTypes.FailTransReward)
             assert(TransitionResult.isErr(t))
             printTrace(executedTransitions.toList)
+            origOut.println("Nour test found an error")
+            out.println("Nour test found an error")
+            if(isExhaustiveSearch)
+              this.iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this
             return (result,
                     new PathResult(result, successor, backtracked, true, false))
           }
@@ -1006,6 +1016,8 @@ class Modbat(val mbt: MBT) {
     if (successors.isEmpty && backtracked) {
       warnAboutPreconditions(allSucc, backtracked)
     }
+    if(isExhaustiveSearch)
+      this.iterativeDepthSearch.restartFromRoot();
     mbt.log.debug("No more successors.")
     checkIfPendingModels
     ((Finished, null), null)

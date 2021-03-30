@@ -124,12 +124,19 @@ public class Trie<T> //todo need dotify to this too
     {
         child.setVisited(true);
 
-        for (TrieNode<T> currentNode = child.getParent() ; findUnvisitedNode(currentNode) == null ; currentNode = currentNode.getParent() )
+        if (child == root)
+        {
+            root.setVisited(true);    //todo return false instead??
+            return;
+        }
+
+        for (TrieNode<T> currentNode = child.getParent() ; findUnvisitedNode(currentNode) == null && currentNode.getParent() != null; currentNode = currentNode.getParent() )
         {
             currentNode.setVisited(true);
         }
 
-
+        //int x = 5;
+        //System.out.println(x);
     }
 
 
