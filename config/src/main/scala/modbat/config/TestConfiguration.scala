@@ -38,4 +38,6 @@ class TestConfiguration extends Configuration {
 
   @Requires(opt = "smallPrime", equals = "two")
   var evenPrime = false
+
+
 }

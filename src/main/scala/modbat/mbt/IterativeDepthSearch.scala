@@ -19,20 +19,20 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   var currentTrieNode: TrieNode[Edge[StateData, EdgeData]] = _;
   var leafReached = false;
 
-  //var rootIsMarked = false;
+  var rootIsMarked = false;
 
 
   initializeExhaustiveTrie(graph, firstModelInstance, config)
 
   def initializeExhaustiveTrie(graph :  Graph[StateData, EdgeData], firstModelInstance: ModelInstance, config : Configuration): Unit =
   {
-    //val depth = config.depth;  //todo add them to the config file
-    //val removeLoops = config.removeLoops;
+    val depth = config.depth;
+    val removeLoops = config.removeLoops;
 
 
-    val trieBuilder : TrieBuilder[StateData, EdgeData] = new TrieBuilder(false) //todo change this
+    val trieBuilder : TrieBuilder[StateData, EdgeData] = new TrieBuilder(removeLoops)
     val initEdge = new Edge[StateData, EdgeData](null, graph.getRoot) //todo this guy has null
-    trieBuilder.runFinder(graph, initEdge, 5) //todo change the parameters
+    trieBuilder.runFinder(graph, initEdge, depth)
     trie = trieBuilder.getTrie;
     firstModelInstance.exhaustiveTrie = trie;
 
@@ -41,13 +41,31 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   }
 
 
-  // todo when reaching a leaf, set the current node to be the root again
+
+  /*
+  4 cases to the return:
+
+  1- if the path in the original graph continue and in the trie continue   (normal case, move once will find first unvisited trieNode)
+  2- if the path in the original graph continue but in the trie this is the leaf
+
+  3- if the path in the trie graph end and in the trie end
+  4- if the path in the trie graph end and in the trie continue (should never happen)
+
+
+  - and we have the cases where the root is marked as visited or unvisited
+
+   */
 
 
 
 
   def getCurrentTransition(): Transition = //todo if this is a leaf and leaf already visitied return null.
   {
+    if (trie.getRoot.isVisited == true) {
+      rootIsMarked = true;
+      return null
+    };
+
     if (leafReached == true)
     {
       currentTrieNode =  trie.getRoot;
@@ -56,19 +74,8 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
       return null;  // todo make sure null here will not backtrack.
     }
 
-    val c1 : TrieNode[Edge[StateData, EdgeData]] = currentTrieNode;
-    val c2 : Edge[StateData, EdgeData]           = currentTrieNode.getData
-    val c3 : EdgeData                            = currentTrieNode.getData.getData
-    val c4 : Transition                          = currentTrieNode.getData.getData.transition
-
-    return c4
+    return currentTrieNode.getData.getData.transition
   }
-
-  /*
-  1- we need to make null != backtrack.  How to distinguish the backtracking things?
-  2- if the returned transistion from here didn't match any of the thranisistion in the makechoice transition list
-        then we have maybe dicovered a choice transition => run random search ?? (and increase depth??)
-    */
 
   def restartFromRoot(): Unit =
   {
@@ -97,11 +104,19 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   }
 
 
+  /*
+    1- we need to make null != backtrack.  How to distinguish the backtracking things?
+    2- if the returned transistion from here didn't match any of the thranisistion in the makechoice transition list
+          then we have maybe dicovered a choice transition => run random search ?? (and increase depth??)
+      */
 
 
-
-
-  private val log = firstModelInstance.mbt.log //todo why not??
+  /*
+  val c1 : TrieNode[Edge[StateData, EdgeData]] = currentTrieNode;
+    val c2 : Edge[StateData, EdgeData]           = currentTrieNode.getData
+    val c3 : EdgeData                            = currentTrieNode.getData.getData
+    val c4 : Transition                          = currentTrieNode.getData.getData.transition
+   */
 
 
   /**
@@ -168,8 +183,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
 
 
-
-
+  private val log = firstModelInstance.mbt.log //todo why not??
 
   private def getPrintStream(outputFileName: String): PrintStream = {
     val pathOfOutputFile: String = config.dotDir + File.separatorChar + outputFileName

@@ -424,6 +424,11 @@ class Modbat(val mbt: MBT) {
 
   def runTests(n: Int): Unit = {
     for (i <- 1 to n) { // n is the number of test cases
+      if (mbt.config.search == "exhaustive" && iterativeDepthSearch != null && iterativeDepthSearch.rootIsMarked)
+      {
+        return ;
+      }
+
       mbt.rng = masterRNG.clone
       // advance RNG by one step for each path
       // so each path stays the same even if the length of other paths

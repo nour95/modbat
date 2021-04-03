@@ -103,6 +103,18 @@ class Configuration extends modbat.config.Configuration {
   @Choice(Array("random", "heur", "exhaustive"))
   var search = "random"
 
+  //Nour:
+  @Doc("the depth (for usage search=exhaustive)")
+  @Range(min = 0)
+  @Requires(opt = "search", equals = "exhaustive")
+  var depth = 0
+
+  @Doc("the option for visiting loops and self loops only one time (true) or multiple times (false) (for usage search=exhaustive)")
+  @Requires(opt = "search", equals = "exhaustive")
+  var removeLoops = false
+
+
+
   @Doc("bandit trade off value (for usage search=heur)")
   var banditTradeoff = 2
 
