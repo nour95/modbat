@@ -1,5 +1,6 @@
 package modbat.mbt
 
+import java.io.File
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -53,6 +54,9 @@ class ModelInstance (val mbt: MBT, val model: Model,
   // graph instance of model - Nour and George
   var graph: GraphAdaptor = _
   var exhaustiveTrie: Trie[Edge[StateData, EdgeData]] = _
+  var iterativeDepthSearch : IterativeDepthSearch = null
+
+
 
   /* isChild is true when coverage information of initial instance is
    * to be re-used; this is the case when a child is launched, but also
@@ -117,14 +121,17 @@ class ModelInstance (val mbt: MBT, val model: Model,
     }
   }
 
-  def addAndLaunch(firstLaunch: Boolean) = {
+  def addAndLaunch(firstLaunch: Boolean) =
+  {
+    var isFirstInstance = false
     if (mbt.firstInstance.contains(className)) {
       val master =
-         initChildInstance(className, trans.toArray)
+        initChildInstance(className, trans.toArray)
       regSynthTrans(true)
       registerStateSelfTrans(model, true)
       TransitionCoverage.reuseCoverageInfo(this, master, className)
     } else {
+      isFirstInstance = true
       mbt.firstInstance.put(className, this)
       init (false)
       regSynthTrans(false)
@@ -146,7 +153,31 @@ class ModelInstance (val mbt: MBT, val model: Model,
     mbt.launchedModelInst += model
     currentState = initialState
     StateCoverage.cover(initialState)
+
+    // get first instance of model to add the graph to it
+    //    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(this.className, sys.error("Illegal state"))
+    if (isFirstInstance) {
+      val graph: GraphAdaptor = new GraphAdaptor(mbt.config, this)
+      graph.printGraphTo(mbt.config.dotDir + File.separator + this.className + "_graph.dot")
+      //      graph.setOutStream(mbt.origLog.out) // TODO: comment later or change to work in debug mode
+      //      graph.setErrStream(mbt.origLog.err) // TODO: comment later or change to work in debug mode
+      this.graph = graph
+
+      if(mbt.config.search == "exhaustive")
+      {
+        val iterativeSearch = new IterativeDepthSearch(graph.graph, this, mbt.config);
+        this.iterativeDepthSearch = iterativeSearch;
+        mbt.origLog.out.println("Trie has " + iterativeSearch.getLeafCount() + " different path")
+        iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
+      }
+    }
+
+
+
     this
+
+
+
   }
 
   def join(modelInstance: Model): Unit = {

@@ -99,7 +99,7 @@ class Modbat(val mbt: MBT) {
   var trie = new Trie(mbt)
   private var pathInfoRecorder = new ListBuffer[PathInfo]
 
-  private var iterativeDepthSearch : IterativeDepthSearch = _
+  //private var iterativeDepthSearch : IterativeDepthSearch = _
 
 
   if (mbt.config.init) {
@@ -424,6 +424,10 @@ class Modbat(val mbt: MBT) {
 
   def runTests(n: Int): Unit = {
     for (i <- 1 to n ) { // n is the number of test cases
+
+      val firstInstanceOfMainModel : ModelInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
+      val iterativeDepthSearch = firstInstanceOfMainModel.iterativeDepthSearch;
+
       if (mbt.config.search == "exhaustive" && iterativeDepthSearch != null && iterativeDepthSearch.rootIsMarked)
       {
         return ;
@@ -484,23 +488,23 @@ class Modbat(val mbt: MBT) {
     mbt.log.debug("--- Exploring model ---")
     // create the graph - George and Nour
 
-    // get first instance of model to add the graph to it
-    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
-    if (firstModelInstance.graph == null) {
-      val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
-      graph.printGraphTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_graph.dot")
-      firstModelInstance.graph = graph //todo fix the error stream thing here and in the trie
-
-      // Nour: generate the trie
-      if(mbt.config.search == "exhaustive")
-      {
-        val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config);
-        this.iterativeDepthSearch = iterativeSearch;
-        origOut.println("Trie has " + iterativeSearch.getLeafCount() + " different path")
-        iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_trie.dot")
-      }
-
-    }
+//    // get first instance of model to add the graph to it
+//    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
+//    if (firstModelInstance.graph == null) {
+//      val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
+//      graph.printGraphTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_graph.dot")
+//      firstModelInstance.graph = graph //todo fix the error stream thing here and in the trie
+//
+//      // Nour: generate the trie
+//      if(mbt.config.search == "exhaustive")
+//      {
+//        val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config);
+//        this.iterativeDepthSearch = iterativeSearch;
+//        origOut.println("Trie has " + iterativeSearch.getLeafCount() + " different path")
+//        iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_trie.dot")
+//      }
+//
+//    }
 
 
     timesVisited.clear()
@@ -611,6 +615,8 @@ class Modbat(val mbt: MBT) {
   def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double):(ModelInstance, Transition) =
   {
 
+    val firstInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
+    val iterativeDepthSearch = firstInstance.iterativeDepthSearch;
 
     val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
 
@@ -913,6 +919,12 @@ class Modbat(val mbt: MBT) {
     var allSucc = successors
     var totalW = totalWeight(successors)
     val isExhaustiveSearch = mbt.config.search == "exhaustive"; //Nour
+    var iterativeDepthSearch : IterativeDepthSearch = null;
+
+    if (isExhaustiveSearch) {
+       val firstInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
+       iterativeDepthSearch = firstInstance.iterativeDepthSearch;
+    }
     var backtracked = false // boolean var for backtracked case -Rui
 
     while (!successors.isEmpty && (totalW > 0 || !mbt.transitionQueue.isEmpty))  // transitionQueue has things if there is a 'invokeTranisition' method inside the model (dsl, user file expalining the model)
@@ -985,7 +997,7 @@ class Modbat(val mbt: MBT) {
             val observerResult = updateObservers
             if (TransitionResult.isErr(observerResult)) {
               if(isExhaustiveSearch)
-                this.iterativeDepthSearch.restartFromRoot();
+                iterativeDepthSearch.restartFromRoot();
               return ((observerResult, result._2),
                       new PathResult(result,
                                      successor,
@@ -995,7 +1007,7 @@ class Modbat(val mbt: MBT) {
             }
             if (otherThreadFailed) {
               if(isExhaustiveSearch)
-                this.iterativeDepthSearch.restartFromRoot();
+                iterativeDepthSearch.restartFromRoot();
               return ((ExceptionOccurred(mbt.externalException.toString), null),
                       new PathResult(result,
                                      successor,
@@ -1019,7 +1031,7 @@ class Modbat(val mbt: MBT) {
             if(isExhaustiveSearch)
             {
               origOut.println("Nour: Backtracking is discovered. ########################")
-              this.iterativeDepthSearch.restartFromRoot();
+              iterativeDepthSearch.restartFromRoot();
               return ((Finished, null), null)
             }
 
@@ -1033,7 +1045,7 @@ class Modbat(val mbt: MBT) {
             printTrace(executedTransitions.toList)
             origOut.println("Nour test found an error *********************************************************")
             if(isExhaustiveSearch)
-              this.iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this
+              iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this
             return (result,
                     new PathResult(result, successor, backtracked, true, false))
           }
@@ -1046,7 +1058,7 @@ class Modbat(val mbt: MBT) {
       warnAboutPreconditions(allSucc, backtracked)
     }
     if(isExhaustiveSearch)
-      this.iterativeDepthSearch.restartFromRoot();
+      iterativeDepthSearch.restartFromRoot();
     mbt.log.debug("No more successors.")
     checkIfPendingModels
     ((Finished, null), null)

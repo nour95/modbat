@@ -69,7 +69,7 @@ object MBT {
   }
 }
 
-class MBT (val config: Configuration, val log: Log) {
+class MBT (val config: Configuration, val log: Log, val origLog: Log = null) {
   var modelClass: Class[_ <: Any] = null // main model class
   val launchedModels = new ArrayBuffer[ModelInstance]()
   val launchedModelInst = new ArrayBuffer[Model]()
@@ -94,6 +94,7 @@ class MBT (val config: Configuration, val log: Log) {
   val time = new VirtualTime
   val classLoaderURLs = cpToURL(config.classpath)
   val sourceInfo = new SourceInfo(classLoaderURLs, log)
+
 
   def printStackTrace(trace: Array[StackTraceElement]): Unit = {
     for (el <- trace) {
