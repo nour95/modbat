@@ -9,7 +9,6 @@ public interface TrieNode<T>
     int getId();
 
     boolean isVisited();
+    boolean isSynthetic();
 
-
-    //todo have get parent too
 }

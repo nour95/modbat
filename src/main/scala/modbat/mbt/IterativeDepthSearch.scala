@@ -17,8 +17,11 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
   var trie : Trie[Edge[StateData, EdgeData]] = _;
   var currentTrieNode: TrieNode[Edge[StateData, EdgeData]] = _;
+  var previousTrieNode: TrieNode[Edge[StateData, EdgeData]] = null;
+
   var leafReached = false;
   var rootIsMarked = false;
+  var syntheticCurrent = false;
 
 
   initializeExhaustiveTrie(graph, firstModelInstance, config)
@@ -50,7 +53,6 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   }
 
 
-
   /*
   4 cases to the return:
 
@@ -64,8 +66,6 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   - and we have the cases where the root is marked as visited or unvisited
 
    */
-
-
 
 
   def getCurrentTransition(): Transition = //todo if this is a leaf and leaf already visitied return null.
@@ -92,12 +92,33 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     moveOnce()
   }
 
+  def hasSyntheticChildren(): Boolean =
+  {
+    syntheticCurrent = trie.hasSyntheticChildren(currentTrieNode)
+    return syntheticCurrent;
+  }
+
+  def checkIfMovedToSynthetic(currentState: State): Unit =
+  {
+    //Node[StateNode]
+
+    val currentNodeCurrentState = currentTrieNode.getData.getSource.getData.state
+    if(syntheticCurrent && currentState.equals(currentNodeCurrentState))
+    {
+      //moveOnce();
+    }
+
+  }
 
   def moveOnce(): Unit =
   {
     val child = trie.findUnvisitedNode(currentTrieNode)
 
-    if (currentTrieNode == trie.getRoot && child == null)
+//    if (trie.hasSyntheticChildren(child))  //todo
+//      syntheticCurrent = true;
+
+
+      if (currentTrieNode == trie.getRoot && child == null)
       rootIsMarked = true;
 
     if (child == null)
@@ -110,6 +131,19 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
 
   }
+
+  def prepareMoving() : Unit =
+  {
+    //val child = trie.findUnvisitedNode(currentTrieNode)
+
+    if (trie.hasSyntheticChildren(currentTrieNode)) {
+      syntheticCurrent = true;
+      previousTrieNode = currentTrieNode;
+    }
+
+
+  }
+
 
 
   /*
@@ -161,6 +195,12 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
       if(trie.isLeaf(parent)){
         buf.append(" color = \"red\"")
+      }
+
+      val isSynthetic = parent.isSynthetic;
+
+      if (isSynthetic) {
+        buf.append(" style = \"dashed\"")
       }
 
       buf.append("]")

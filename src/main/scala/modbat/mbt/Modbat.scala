@@ -613,12 +613,17 @@ class Modbat(val mbt: MBT) {
   def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double, currentModelInstance : ModelInstance):(ModelInstance, Transition) =
   {
 
-    if(currentModelInstance.className == "modbat.examples.listit.ListIteratorModel")
-    {
-      val x = 5
-      out.print(x);
-    }
+//    if(currentModelInstance.className == "modbat.examples.listit.ListIteratorModel")
+//    {
+//      val x = 5
+//      out.print(x);
+//    }
+
     val iterativeDepthSearch = currentModelInstance.iterativeDepthSearch;
+
+    val parentState = choices.head._2.origin;
+    iterativeDepthSearch.checkIfMovedToSynthetic(parentState)
+
     val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
 
     if(transitionFromTrie == null) { //todo not sure
@@ -632,7 +637,13 @@ class Modbat(val mbt: MBT) {
     {
       if(choice._2.idx == transitionFromTrie.idx) {
         origOut.println("choice: " + transitionFromTrie + " has been chosen from model: " + currentModelInstance.name)
-        iterativeDepthSearch.moveOnce()
+
+        val x = !iterativeDepthSearch.hasSyntheticChildren()
+        if(!iterativeDepthSearch.hasSyntheticChildren())
+          iterativeDepthSearch.moveOnce()
+        else
+          iterativeDepthSearch.prepareMoving()
+
         return choice
       };
     }

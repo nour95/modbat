@@ -6,23 +6,31 @@ class NourModel extends Model
 {
 
   // transitions
-  "one" -> "two" := {
-    val x = 1;
-    if(true)
-      throw new NullPointerException()
-
-  } catches( "NullPointerException" -> "four" ) // nextIf , maybe NextIf
-
-  "one" -> "three" := {
-    val z =0;
-    choose(3, 7)
+  "zero" -> "one" := {
+    val m = 5;
   }
 
-  "three" -> "four" := {
+  "one" -> "two" := {
+    val x = 1;
+    //if(true)
+    //  throw new NullPointerException()
+
+  } nextIf  (() => true) -> "synthetic"
+  //catches( "NullPointerException" -> "four" ) // nextIf , maybe NextIf
+
+  "two" -> "five" := {
+    val z =0;
+  }
+
+  "two" -> "six" := {
     val z1 =0;
   }
 
-  "four" -> "five" := {
+  "synthetic" -> "three" := {
+    val y = 2;
+  } //nextIf(() => true) -> "five"
+
+  "synthetic" -> "four" := {
     val y = 2;
   }
 

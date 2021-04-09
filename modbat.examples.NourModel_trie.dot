@@ -1,0 +1,24 @@
+digraph model {
+  graph [ rankdir = "TB", ranksep="0.4", nodesep="0.2" ];
+  node [ fontname = "Helvetica", fontsize="12.0", margin="0.07" ];
+  edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
+  {
+    node []
+     "3" [label= "edge: 'two' -> 'five' at level 3 with parent: edge: 'one' -> 'two' (two => five) " color = "red"]
+     "1" [label= "edge: 'zero' -> 'one' at level 1 with parent: edge: null -> 'zero' (zero => one) "]
+     "7" [label= "edge: 'synthetic' -> 'four' at level 3 with parent: edge: 'one' -> 'synthetic' (synthetic => four) " color = "red"]
+     "6" [label= "edge: 'synthetic' -> 'three' at level 3 with parent: edge: 'one' -> 'synthetic' (synthetic => three) " color = "red"]
+     "0" [label= "edge: null -> 'zero' at level 0 with parent: null"]
+     "2" [label= "edge: 'one' -> 'two' at level 2 with parent: edge: 'zero' -> 'one' (one => two) "]
+     "5" [label= "edge: 'one' -> 'synthetic' (Synthetic) at level 2 with parent: edge: 'zero' -> 'one' ((one => two)) " style = "dashed"]
+     "4" [label= "edge: 'two' -> 'six' at level 3 with parent: edge: 'one' -> 'two' (two => six) " color = "red"]
+  }
+
+  "1" -> "2";
+  "1" -> "5";
+  "0" -> "1";
+  "2" -> "3";
+  "2" -> "4";
+  "5" -> "6";
+  "5" -> "7";
+}

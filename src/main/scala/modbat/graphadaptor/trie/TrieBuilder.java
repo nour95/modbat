@@ -44,10 +44,11 @@ public class TrieBuilder<NT, D extends EdgeData>
         {
 
             //Node<Edge<T>> childNode = new Node<Edge<T>>(outGoingEdge);
-            if (outGoingEdge.getData().transition().isSynthetic())
-                continue;
+//            if (outGoingEdge.getData().transition().isSynthetic())
+//                continue;
+            boolean synthetic = outGoingEdge.getData().transition().isSynthetic();
 
-            TrieNode<Edge<NT, D>> childTrieNode = trie.createTrieNode(outGoingEdge, currentLevel, parentTrieNode, counter);
+            TrieNode<Edge<NT, D>> childTrieNode = trie.createTrieNode(outGoingEdge, currentLevel, parentTrieNode, counter, synthetic);
             counter++;
 
             trie.add(childTrieNode, parentTrieNode);

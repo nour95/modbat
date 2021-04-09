@@ -9,14 +9,16 @@ public class TrieNodeDetails<T> implements TrieNode<T>
     private TrieNodeDetails<T> parent;
     private boolean visited;
     private int id;
+    private boolean isSynthetic;
 
-    public TrieNodeDetails(T data, int level, TrieNodeDetails<T> parent, int id)
+    public TrieNodeDetails(T data, int level, TrieNodeDetails<T> parent, int id, boolean isSynthetic)
     {
         this.data = data;
         this.level = level;
         this.parent = parent;
         this.visited = false;
         this.id = id;
+        this.isSynthetic = isSynthetic;
     }
 
     public T getData() {
@@ -53,6 +55,8 @@ public class TrieNodeDetails<T> implements TrieNode<T>
 
     public int getId() { return id; }
 
+    public boolean isSynthetic() { return isSynthetic; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,7 +74,8 @@ public class TrieNodeDetails<T> implements TrieNode<T>
     @Override
     public String toString()
     {
-        String s = data.toString() + " at level " + level + " with parent: ";
+        String synthetic = isSynthetic ? " (Synthetic)" : "";
+        String s = data.toString() + synthetic + " at level " + level + " with parent: ";
         if (parent != null)
             s += parent.getData();
         else

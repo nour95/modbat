@@ -26,7 +26,7 @@ public class Trie<T> //todo need dotify to this too
 
     public void addInitialEdge(T initDataWithoutHead)
     {
-        root = createTrieNode(initDataWithoutHead, 0, null, 0);
+        root = createTrieNode(initDataWithoutHead, 0, null, 0, false);
     }
 
 
@@ -45,13 +45,13 @@ public class Trie<T> //todo need dotify to this too
     }
 
 
-    public TrieNode<T> createTrieNode(T newNode, int currentLevel, TrieNode<T> parentTrieNode, int id)
+    public TrieNode<T> createTrieNode(T newNode, int currentLevel, TrieNode<T> parentTrieNode, int id, boolean isSynthetic)
     {
         TrieNode<T> trieNode;
         if(removeLoops)
-            trieNode = new RawTrieNode<T>(newNode, currentLevel, (RawTrieNode<T>) parentTrieNode, id);
+            trieNode = new RawTrieNode<T>(newNode, currentLevel, (RawTrieNode<T>) parentTrieNode, id, isSynthetic);
         else
-            trieNode = new TrieNodeDetails<T>(newNode, currentLevel, (TrieNodeDetails<T>) parentTrieNode, id);
+            trieNode = new TrieNodeDetails<T>(newNode, currentLevel, (TrieNodeDetails<T>) parentTrieNode, id, isSynthetic);
 
         if (!neighbours.containsKey(trieNode))
             neighbours.put(trieNode, new LinkedList<TrieNode<T>>());
@@ -107,7 +107,7 @@ public class Trie<T> //todo need dotify to this too
 
         for (TrieNode<T> node : childrenList)
         {
-            if (! node.isVisited())
+            if (! node.isVisited() && ! node.isSynthetic())
                 return node;
             //todo else remove from list ?? increase effeicincy
 
@@ -115,6 +115,22 @@ public class Trie<T> //todo need dotify to this too
 
 
         return null;
+    }
+
+    public boolean hasSyntheticChildren(TrieNode<T> parent)
+    {
+        if (parent == null)
+            return false;
+
+        LinkedList<TrieNode<T>> childrenList =  neighbours.get(parent);
+
+        for (TrieNode<T> node : childrenList)
+        {
+            if (node.isSynthetic())
+                return true;
+        }
+
+        return false;
     }
 
 
