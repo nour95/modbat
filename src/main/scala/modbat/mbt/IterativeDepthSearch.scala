@@ -4,9 +4,9 @@ import java.io.{File, FileOutputStream, IOException, PrintStream}
 
 import scala.collection.JavaConverters.{asScalaBufferConverter, asScalaSetConverter}
 import modbat.dsl.{State, Transition}
-import modbat.graph.{Edge, Graph, Node, TrieBuilder}
-import modbat.graph.trie.Trie
-import modbat.graph.trie.trienode.TrieNode
+import modbat.graph.{Edge, Graph, Node}
+import modbat.graphadaptor.trie.{Trie, TrieBuilder}
+import modbat.graphadaptor.trie.trienode.TrieNode
 import modbat.graphadaptor.{EdgeData, ExpectedExceptionTransition, NormalTransition, StateData, TransitionType}
 
 import scala.collection.mutable
@@ -18,7 +18,6 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   var trie : Trie[Edge[StateData, EdgeData]] = _;
   var currentTrieNode: TrieNode[Edge[StateData, EdgeData]] = _;
   var leafReached = false;
-
   var rootIsMarked = false;
 
 
@@ -38,6 +37,15 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
     currentTrieNode = trie.getRoot
     moveOnce() // get first real edge to return
+  }
+
+  def getLeafCount(): Int =
+  {
+
+    if (trie != null)
+      trie.countLeaf()
+    else
+      0
   }
 
 
@@ -61,11 +69,6 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
   def getCurrentTransition(): Transition = //todo if this is a leaf and leaf already visitied return null.
   {
-    if (trie.getRoot.isVisited == true) {
-      rootIsMarked = true;
-      return null
-    };
-
     if (leafReached == true)
     {
       currentTrieNode =  trie.getRoot;
@@ -79,6 +82,9 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
   def restartFromRoot(): Unit =
   {
+    if (rootIsMarked)
+      return
+
     leafReached = false
     trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentTrieNode);
     currentTrieNode =  trie.getRoot;
@@ -90,15 +96,16 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   {
     val child = trie.findUnvisitedNode(currentTrieNode)
 
-    if (child == null) {
+    if (currentTrieNode == trie.getRoot && child == null)
+      rootIsMarked = true;
+
+    if (child == null)
+    {
       leafReached = true
       trie.markVisitedUpToTheFirstParentWithUnvisitedNode(currentTrieNode);
-      // todo set the current to be the root again
-    };
-    else {
-
-      currentTrieNode = child;
     }
+    else
+      currentTrieNode = child;
 
 
   }
@@ -183,7 +190,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
 
 
-  private val log = firstModelInstance.mbt.log //todo why not??
+  private val errStream : PrintStream = null
 
   private def getPrintStream(outputFileName: String): PrintStream = {
     val pathOfOutputFile: String = config.dotDir + File.separatorChar + outputFileName
@@ -191,10 +198,15 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
       new PrintStream(new FileOutputStream(pathOfOutputFile), false, "UTF-8")
     } catch {
       case ioe: IOException =>
-        log.error("Cannot open file " + pathOfOutputFile + ":")
-        log.error(ioe.getMessage)
+        printMe("Cannot open file " + pathOfOutputFile + ":")
+        printMe(ioe.getMessage)
         throw ioe
     }
+  }
+
+  private def printMe(s : String) = {
+    if (errStream != null)
+      errStream.println(s);
   }
 
 

@@ -1,23 +1,32 @@
-package modbat.graph.trie.trienode;
+package modbat.graphadaptor.trie.trienode;
 
 import java.util.Objects;
 
-public class TrieNodeDetails<T> implements TrieNode<T>
+public class RawTrieNode<T> implements TrieNode<T>
 {
+
     private T data;
     private int level; // level
-    private TrieNodeDetails<T> parent;
+    private RawTrieNode<T> parent;
     private boolean visited;
     private int id;
 
-    public TrieNodeDetails(T data, int level, TrieNodeDetails<T> parent, int id)
+    public RawTrieNode(T data, int level, RawTrieNode<T> parent, int id)
     {
         this.data = data;
         this.level = level;
         this.parent = parent;
         this.visited = false;
         this.id = id;
+
     }
+//
+//    public RawTrieNode(T data)
+//    {
+//        this.data = data;
+//        visited = false;
+//    }
+
 
     public T getData() {
         return data;
@@ -25,22 +34,6 @@ public class TrieNodeDetails<T> implements TrieNode<T>
 
     public void setData(T data) {
         this.data = data;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public TrieNode<T> getParent() {
-        return parent;
-    }
-
-    public void setParent(TrieNodeDetails<T> parent) {
-        this.parent = parent;
     }
 
     public boolean isVisited() {
@@ -51,20 +44,24 @@ public class TrieNodeDetails<T> implements TrieNode<T>
         this.visited = visited;
     }
 
+    public TrieNode<T> getParent() {
+        return parent;
+    }
+
     public int getId() { return id; }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TrieNodeDetails<?> trieNode = (TrieNodeDetails<?>) o;
-        return Objects.equals(data, trieNode.data) && Objects.equals(level, trieNode.level) &&
-                Objects.equals(parent, (trieNode.parent));
+        RawTrieNode<?> trieNode = (RawTrieNode<?>) o;
+        return Objects.equals(data, trieNode.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(data, level, parent);
+        return Objects.hash(data);
     }
 
     @Override

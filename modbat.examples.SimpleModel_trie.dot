@@ -4,49 +4,7 @@ digraph model {
   edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
   {
     node []
-     "10" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'zero' -> 'zero'"]
-     "11" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two'" color = "red"]
-     "4" [label= "edge: 'zero' -> 'zero' at level 4 with parent: edge: 'zero' -> 'zero'"]
-     "14" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'one' -> 'two'" color = "red"]
-     "18" [label= "edge: 'one' -> 'two' at level 3 with parent: edge: 'zero' -> 'one'"]
-     "6" [label= "edge: 'zero' -> 'one' at level 5 with parent: edge: 'zero' -> 'zero'" color = "red"]
-     "5" [label= "edge: 'zero' -> 'zero' at level 5 with parent: edge: 'zero' -> 'zero'" color = "red"]
-     "19" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'one' -> 'two'" color = "red"]
-     "1" [label= "edge: 'reset' -> 'zero' at level 1 with parent: edge: null -> 'reset'"]
-     "0" [label= "edge: null -> 'reset' at level 0 with parent: null"]
-     "7" [label= "edge: 'zero' -> 'two' at level 5 with parent: edge: 'zero' -> 'zero'" color = "red"]
-     "16" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'zero' -> 'two'" color = "red"]
-     "13" [label= "edge: 'one' -> 'two' at level 4 with parent: edge: 'zero' -> 'one'"]
-     "8" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'zero' -> 'zero'"]
-     "15" [label= "edge: 'zero' -> 'two' at level 3 with parent: edge: 'zero' -> 'zero'"]
-     "17" [label= "edge: 'zero' -> 'one' at level 2 with parent: edge: 'reset' -> 'zero'"]
-     "2" [label= "edge: 'zero' -> 'zero' at level 2 with parent: edge: 'reset' -> 'zero'"]
-     "3" [label= "edge: 'zero' -> 'zero' at level 3 with parent: edge: 'zero' -> 'zero'"]
-     "9" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one'" color = "red"]
-     "21" [label= "edge: 'two' -> 'end' at level 3 with parent: edge: 'zero' -> 'two'" color = "red"]
-     "12" [label= "edge: 'zero' -> 'one' at level 3 with parent: edge: 'zero' -> 'zero'"]
-     "20" [label= "edge: 'zero' -> 'two' at level 2 with parent: edge: 'reset' -> 'zero'"]
+     "0" [label= "edge: null -> 'reset' at level 0 with parent: null" color = "red"]
   }
 
-  "10" -> "11";
-  "4" -> "5";
-  "4" -> "6";
-  "4" -> "7";
-  "18" -> "19";
-  "1" -> "2";
-  "1" -> "17";
-  "1" -> "20";
-  "0" -> "1";
-  "13" -> "14";
-  "8" -> "9";
-  "15" -> "16";
-  "17" -> "18";
-  "2" -> "3";
-  "2" -> "12";
-  "2" -> "15";
-  "3" -> "4";
-  "3" -> "8";
-  "3" -> "10";
-  "12" -> "13";
-  "20" -> "21";
 }

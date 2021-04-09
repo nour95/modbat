@@ -1,4 +1,4 @@
-package modbat.graph.trie.trienode;
+package modbat.graphadaptor.trie.trienode;
 
 public interface TrieNode<T>
 {

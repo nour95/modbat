@@ -1,10 +1,8 @@
-package modbat.graph.trie;
+package modbat.graphadaptor.trie;
 
-import modbat.graph.Edge;
-import modbat.graph.Node;
-import modbat.graph.trie.trienode.TrieNode;
-import modbat.graph.trie.trienode.RawTrieNode;
-import modbat.graph.trie.trienode.TrieNodeDetails;
+import modbat.graphadaptor.trie.trienode.TrieNode;
+import modbat.graphadaptor.trie.trienode.RawTrieNode;
+import modbat.graphadaptor.trie.trienode.TrieNodeDetails;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +35,7 @@ public class Trie<T> //todo need dotify to this too
         LinkedList<TrieNode<T>> parentsAllChildren = neighbours.get(parentNode);
 
         if (parentsAllChildren == null) {
-            System.out.println("That is wired");
+            //System.out.println("That is wired");
             return;
         }
 
@@ -148,6 +146,20 @@ public class Trie<T> //todo need dotify to this too
         return neighbours.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
+    public int countLeaf()
+    {
+        int counter = 0;
+        Set<TrieNode<T>> nodeSet = getAllNodes();
+
+        for (TrieNode<T> node : nodeSet)
+        {
+            if (isLeaf(node))
+                counter++;
+        }
+
+        return counter;
+
+    }
 
 
 

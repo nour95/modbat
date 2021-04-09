@@ -69,10 +69,12 @@ class JavaNioServerSocket extends Model {
 
   // transitions
   "reset" -> "open" := {
-    ch = ServerSocketChannel.open()
+    ch = ServerSocketChannel.open()  // in the beginning the ch Blocking
   }
   "open" -> "open" := {
+    // Blocking
     toggleBlocking(ch)
+    // !Blocking
   }
   "open" -> "bound" := {
     ch.socket().bind(new InetSocketAddress("localhost", 0))
@@ -84,6 +86,7 @@ class JavaNioServerSocket extends Model {
   "open" -> "err" := {
     connection = ch.accept()
   } throws ("NotYetBoundException")
+
   "bound" -> "connected" := {
     require(ch.isBlocking())
     startClient
@@ -98,6 +101,7 @@ class JavaNioServerSocket extends Model {
     connection = null
     maybe (connection = ch.accept())
   } nextIf { () => connection != null} -> "connected"
+
   "connected" -> "connected" := {
     readFrom(connection)
   }

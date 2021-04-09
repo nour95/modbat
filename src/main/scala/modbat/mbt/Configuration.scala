@@ -111,7 +111,7 @@ class Configuration extends modbat.config.Configuration {
 
   @Doc("the option for visiting loops and self loops only one time (true) or multiple times (false) (for usage search=exhaustive)")
   @Requires(opt = "search", equals = "exhaustive")
-  var removeLoops = false
+  var removeLoops = false  // todo make careful to use '-' because no camel cases in the bash
 
 
 

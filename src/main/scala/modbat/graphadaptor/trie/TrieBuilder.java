@@ -1,10 +1,14 @@
-package modbat.graph;
+package modbat.graphadaptor.trie;
 
+import modbat.dsl.Transition;
 import modbat.graph.Edge;
-import modbat.graph.trie.Trie;
-import modbat.graph.trie.trienode.TrieNode;
+import modbat.graph.Graph;
+import modbat.graph.Node;
+import modbat.graphadaptor.EdgeData;
+import modbat.graphadaptor.trie.Trie;
+import modbat.graphadaptor.trie.trienode.TrieNode;
 
-public class TrieBuilder<NT, D>
+public class TrieBuilder<NT, D extends EdgeData>
 {
     private Trie<Edge<NT, D>> trie;
     private int counter = 1;
@@ -40,6 +44,9 @@ public class TrieBuilder<NT, D>
         {
 
             //Node<Edge<T>> childNode = new Node<Edge<T>>(outGoingEdge);
+            if (outGoingEdge.getData().transition().isSynthetic())
+                continue;
+
             TrieNode<Edge<NT, D>> childTrieNode = trie.createTrieNode(outGoingEdge, currentLevel, parentTrieNode, counter);
             counter++;
 

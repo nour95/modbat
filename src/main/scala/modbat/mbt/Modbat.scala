@@ -27,7 +27,7 @@ import modbat.util.FieldUtil
 import scala.math._
 import scala.util.Random
 import com.miguno.akka.testing.VirtualTime
-import modbat.graph.{Edge, TrieBuilder}
+import modbat.graph.Edge
 import modbat.graphadaptor.{EdgeData, GraphAdaptor, StateData}
 
 class NoTaskException(message: String = null, cause: Throwable = null)
@@ -423,7 +423,7 @@ class Modbat(val mbt: MBT) {
   }
 
   def runTests(n: Int): Unit = {
-    for (i <- 1 to n) { // n is the number of test cases
+    for (i <- 1 to n ) { // n is the number of test cases
       if (mbt.config.search == "exhaustive" && iterativeDepthSearch != null && iterativeDepthSearch.rootIsMarked)
       {
         return ;
@@ -488,16 +488,16 @@ class Modbat(val mbt: MBT) {
     val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(model.className, sys.error("Illegal state"))
     if (firstModelInstance.graph == null) {
       val graph: GraphAdaptor = new GraphAdaptor(mbt.config, model)
-      graph.printGraphTo(firstModelInstance.className + "_graph.dot")
-      firstModelInstance.graph = graph
+      graph.printGraphTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_graph.dot")
+      firstModelInstance.graph = graph //todo fix the error stream thing here and in the trie
 
       // Nour: generate the trie
       if(mbt.config.search == "exhaustive")
       {
         val iterativeSearch = new IterativeDepthSearch(graph.graph, firstModelInstance, mbt.config);
         this.iterativeDepthSearch = iterativeSearch;
-        iterativeSearch.printTrieTo(firstModelInstance.className + "_trie.dot")
-
+        origOut.println("Trie has " + iterativeSearch.getLeafCount() + " different path")
+        iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + firstModelInstance.className + "_trie.dot")
       }
 
     }
@@ -630,8 +630,24 @@ class Modbat(val mbt: MBT) {
       };
     }
 
+
+    origOut.println("All available choices that the trie should choose between them: ================")
+
+    for(choice <- choices)
+    {
+      origOut.println(choice._2)
+    }
+    origOut.println(" ================")
+
+
+    origOut.println("Choice not found in trie, run random search")
+    origOut.println("Current choice from trie: ")
+    origOut.println("------------------------- choice: " + transitionFromTrie + " has been chosen")
+
     // else if the current choice didn't exist in the list from above => run random search
     val randomChoice =  weightedChoice(choices, totalW)
+    origOut.println("Random search: ")
+    origOut.println("               choice: " + randomChoice._2 + " has been chosen")
     return randomChoice
 
   }
@@ -918,13 +934,13 @@ class Modbat(val mbt: MBT) {
       // TODO: try bandit by calling makeChoice
       val tempSuccessor = invocationSuccessor
       if (tempSuccessor.isEmpty)
-        successor = makeChoice(successors, totalW) //Nour: makechoice is here, and it looks like I have a copy of the recorded trensition
+        successor = makeChoice(successors, totalW) //Nour: makeChoice is here, and it looks like I have a copy of the recorded trensition
       else
         successor = tempSuccessor.get;
 
       if(isExhaustiveSearch && successor == null )
       {
-        mbt.log.debug("Reach a leaf node in exhaustive search.") //todo correct ??
+        origOut.println("Reach a leaf node in exhaustive search.") //todo remove th
         checkIfPendingModels
         return ((Finished, null), null)
       }
@@ -956,7 +972,7 @@ class Modbat(val mbt: MBT) {
               mbt.log.debug("Model " + model.name + " has terminated.")
               unblockJoiningModels(model)
             }
-            if(mbt.config.search == "exhaustive" && successor == null) { //todo make sure
+            if(mbt.config.search == "exhaustive" && successor == null) {
               successors = List()
             }
             else if (sameAgain)
@@ -999,6 +1015,15 @@ class Modbat(val mbt: MBT) {
               successors = List()
             else
               successors = successors filterNot (_ == successor)
+
+            if(isExhaustiveSearch)
+            {
+              origOut.println("Nour: Backtracking is discovered. ########################")
+              this.iterativeDepthSearch.restartFromRoot();
+              return ((Finished, null), null)
+            }
+
+
           }
           case (t: TransitionResult, _) => {
             // todo: update the reward for the failed transition - Rui
@@ -1006,8 +1031,7 @@ class Modbat(val mbt: MBT) {
               .updateAverageReward(TransitionRewardTypes.FailTransReward)
             assert(TransitionResult.isErr(t))
             printTrace(executedTransitions.toList)
-            origOut.println("Nour test found an error")
-            out.println("Nour test found an error")
+            origOut.println("Nour test found an error *********************************************************")
             if(isExhaustiveSearch)
               this.iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this
             return (result,
