@@ -110,9 +110,11 @@ class JavaNioSocket extends Model {
     connected = connect(connection)
     maybe { toggleBlocking(connection); connected = connection.finishConnect }
   } maybeNextIf (() => connected) -> "connected"
+
   "maybeconnected" -> "maybeconnected" := {
     toggleBlocking(connection)
   }
+
   "maybeconnected" -> "connected" := {
     require(connection.isBlocking())
     connection.finishConnect()

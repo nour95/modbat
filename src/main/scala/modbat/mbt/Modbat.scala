@@ -425,10 +425,8 @@ class Modbat(val mbt: MBT) {
   def runTests(n: Int): Unit = {
     for (i <- 1 to n ) { // n is the number of test cases
 
-      val firstInstanceOfMainModel : ModelInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
-      val iterativeDepthSearch = firstInstanceOfMainModel.iterativeDepthSearch;
-
-      if (mbt.config.search == "exhaustive" && iterativeDepthSearch != null && iterativeDepthSearch.rootIsMarked)
+      var firstInstance = mbt.firstInstance.find(t => ! t._2.iterativeDepthSearch.rootIsMarked)
+      if (mbt.config.search == "exhaustive" && firstInstance.isEmpty)
       {
         return ;
       }
@@ -542,7 +540,7 @@ class Modbat(val mbt: MBT) {
             timesVisited.getOrElseUpdate(RecordedState(m, s.dest), 0)
             + " times.")
       }
-      val limit = mbt.config.loopLimit // Nour: like depth
+      val limit = mbt.config.loopLimit
       if ((limit != 0) &&
           (timesVisited.getOrElseUpdate(RecordedState(m, s.dest), 0)
             >= limit)) {
@@ -604,20 +602,23 @@ class Modbat(val mbt: MBT) {
     * picks one transition based on the current model state
     * (heuristic or random choice)
     */
-  def makeChoice(choices: List[(ModelInstance, Transition)], totalW: Double) = {
+  def makeChoice(choices: List[(ModelInstance, Transition)], totalW: Double, currentModelInstance : ModelInstance = null) = {
     mbt.config.search match {
       case "random" => weightedChoice(choices, totalW)
       case "heur"   => heuristicChoice(choices, totalW)
-      case "exhaustive" => exhaustiveChoice(choices, totalW)
+      case "exhaustive" => exhaustiveChoice(choices, totalW, currentModelInstance)
     }
   }
 
-  def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double):(ModelInstance, Transition) =
+  def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double, currentModelInstance : ModelInstance):(ModelInstance, Transition) =
   {
 
-    val firstInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
-    val iterativeDepthSearch = firstInstance.iterativeDepthSearch;
-
+    if(currentModelInstance.className == "modbat.examples.listit.ListIteratorModel")
+    {
+      val x = 5
+      out.print(x);
+    }
+    val iterativeDepthSearch = currentModelInstance.iterativeDepthSearch;
     val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
 
     if(transitionFromTrie == null) { //todo not sure
@@ -630,7 +631,7 @@ class Modbat(val mbt: MBT) {
     for(choice <- choices)
     {
       if(choice._2.idx == transitionFromTrie.idx) {
-        origOut.println("choice: " + transitionFromTrie + " has been chosen")
+        origOut.println("choice: " + transitionFromTrie + " has been chosen from model: " + currentModelInstance.name)
         iterativeDepthSearch.moveOnce()
         return choice
       };
@@ -913,17 +914,23 @@ class Modbat(val mbt: MBT) {
     * inside "invocationSuccessor.getOrElse" that
     * covers a special feature
     */
-  def executeSuccessorTrans
-    : ((TransitionResult, RecordedTransition), PathResult) = {
+  def executeSuccessorTrans : ((TransitionResult, RecordedTransition), PathResult) =
+  {
     var successors = allSuccessors(null) //return outgoing transitions of init state
     var allSucc = successors
     var totalW = totalWeight(successors)
     val isExhaustiveSearch = mbt.config.search == "exhaustive"; //Nour
     var iterativeDepthSearch : IterativeDepthSearch = null;
 
+    var firstInstance : ModelInstance = null;
     if (isExhaustiveSearch) {
-       val firstInstance = mbt.firstInstance.getOrElse(mbt.modelClass.getName, sys.error("iterative search can't find the first model instance"))
-       iterativeDepthSearch = firstInstance.iterativeDepthSearch;
+      val firstInstanceOpt = mbt.firstInstance.find(t => !t._2.iterativeDepthSearch.rootIsMarked)
+      if(firstInstanceOpt.isEmpty)
+        return ((Finished, null), null)
+      else {
+        firstInstance = firstInstanceOpt.get._2
+        iterativeDepthSearch = firstInstance.iterativeDepthSearch
+      };
     }
     var backtracked = false // boolean var for backtracked case -Rui
 
@@ -946,7 +953,7 @@ class Modbat(val mbt: MBT) {
       // TODO: try bandit by calling makeChoice
       val tempSuccessor = invocationSuccessor
       if (tempSuccessor.isEmpty)
-        successor = makeChoice(successors, totalW) //Nour: makeChoice is here, and it looks like I have a copy of the recorded trensition
+        successor = makeChoice(successors, totalW, firstInstance) //Nour: makeChoice is here, and it looks like I have a copy of the recorded trensition
       else
         successor = tempSuccessor.get;
 

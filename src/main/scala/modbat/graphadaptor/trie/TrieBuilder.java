@@ -20,7 +20,7 @@ public class TrieBuilder<NT, D extends EdgeData>
 
 
     //todo have this as atatic method that take the type
-    public void runFinder(Graph<NT, D> graph, Edge<NT, D> initialEdgeWithoutHead, int depth)
+    public void runBuilder(Graph<NT, D> graph, Edge<NT, D> initialEdgeWithoutHead, int depth)
     {
         // set a destination to this edge ..
         Node<NT> root = graph.getRoot();

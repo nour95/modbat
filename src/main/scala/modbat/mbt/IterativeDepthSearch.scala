@@ -31,7 +31,8 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
 
     val trieBuilder : TrieBuilder[StateData, EdgeData] = new TrieBuilder(removeLoops)
     val initEdge = new Edge[StateData, EdgeData](null, graph.getRoot) //todo this guy has null
-    trieBuilder.runFinder(graph, initEdge, depth)
+    trieBuilder.runBuilder(graph, initEdge, depth)
+
     trie = trieBuilder.getTrie;
     firstModelInstance.exhaustiveTrie = trie;
 
@@ -80,7 +81,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     return currentTrieNode.getData.getData.transition
   }
 
-  def restartFromRoot(): Unit =
+  def restartFromRoot(): Unit =  //todo maybe have another method for restart after backtracking that mark as visited from the parent node instead?
   {
     if (rootIsMarked)
       return
@@ -150,8 +151,13 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     {
       //out.println("     \"" + parent.getId() + "\" [label= \"" + parent.toString.replace('\"', '\'') + "\"]")
 
+      var actionName = ""
+      if (parent != null && parent.getData != null && parent.getData.getData != null)
+        actionName =   " (" + parent.getData.getData.transitionLabel + ") ";
+
       val buf = new StringBuffer(
-        "     \"" + parent.getId() + "\" [label= \"" + parent.toString.replace('\"', '\'') + "\"")
+        "     \"" + parent.getId() + "\" [label= \"" + parent.toString.replace('\"', '\'') +
+          actionName + "\"")
 
       if(trie.isLeaf(parent)){
         buf.append(" color = \"red\"")

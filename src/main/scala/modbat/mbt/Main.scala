@@ -22,10 +22,10 @@ object Main {
     try {
       run(args, config, log)
     } catch {
-      case e: Exception => System.exit(1)
       case e: Exception =>
         //        throw e // todo: George remove later
-        //          e.printStackTrace(oldOut) // todo: George remove later
+
+        e.printStackTrace(oldOut) // todo: George remove later
         System.exit(1)
     }
     System.exit(0)
