@@ -1,47 +1,25 @@
 package modbat.examples;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ElevatorSystem
 {
-    public enum Status { Running, Stopping }
-
 
     private boolean doorOpened = false;
     private int currentFloor = 0;
-    private Map<Status, Double> motorStatus = new HashMap<>(); //todo velocity
-    private double currentSpeed = 0.0;
 
-    public ElevatorSystem()
+    public ElevatorSystem() { }
+
+    public boolean moveElevator(int requestingFloor)       //todo have a similar method that call this method and that have a while(doorOpened){wait}??
     {
-        motorStatus.put(Status.Running, 2.5);
-        motorStatus.put(Status.Stopping, 0.0);
-    }
-
-    public void moveElevator(int requestingFloor) //todo george
-    {
-//        closeDoor(); //todo maybe in the require
-//        currentSpeed = motorStatus.get(Status.Running);
-//
-//        waitUntilReachingDistance();
-//        currentFloor  = requestingFloor;
-//        currentSpeed = motorStatus.get(Status.Stopping);
-    }
-
-
-
-    public void requestElevator(int requestingFloor)
-    {
-        if (requestingFloor != currentFloor)
-            moveElevator(requestingFloor);
-
-        //openDoor();
+        if (doorOpened == false) {             //todo this is always false
+            currentFloor = requestingFloor;
+            return true;
+        }
+        else
+            return false;
     }
 
     public void openDoor()
     {
-        //todo require motor.Stopping
         doorOpened = true;
     }
 
@@ -66,13 +44,14 @@ public class ElevatorSystem
         this.currentFloor = currentFloor;
     }
 
-    public double getCurrentSpeed() {
-        return currentSpeed;
+    public void requestElevator(int requestingFloor)
+    {
+        if (requestingFloor != currentFloor)
+            moveElevator(requestingFloor);
+
+        //openDoor();
     }
 
-    public void setCurrentSpeed(double currentSpeed) {
-        this.currentSpeed = currentSpeed;
-    }
 
     private void waitUntilReachingDistance()
     {

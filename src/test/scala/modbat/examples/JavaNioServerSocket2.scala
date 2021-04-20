@@ -9,7 +9,7 @@ import java.nio.channels.ClosedByInterruptException
 import java.nio.channels.ServerSocketChannel
 import java.nio.channels.SocketChannel
 
-class JavaNioServerSocket2 extends Model {
+class FJavaNioServerSocket2 extends Model {
   var ch: ServerSocketChannel = null
   var connection: SocketChannel = null
   var client: TestClient = null

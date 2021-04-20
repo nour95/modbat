@@ -199,7 +199,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   private val errStream : PrintStream = null
 
   private def getPrintStream(outputFileName: String): PrintStream = {
-    val pathOfOutputFile: String = config.dotDir + File.separatorChar + outputFileName
+    val pathOfOutputFile: String = outputFileName
     try {
       new PrintStream(new FileOutputStream(pathOfOutputFile), false, "UTF-8")
     } catch {
