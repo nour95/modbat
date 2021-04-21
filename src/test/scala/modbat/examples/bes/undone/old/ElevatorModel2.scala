@@ -1,4 +1,4 @@
-package modbat.examples.bes.undone
+package modbat.examples.bes.undone.old
 
 import modbat.dsl._
 import modbat.examples.bes.ElevatorSystem2

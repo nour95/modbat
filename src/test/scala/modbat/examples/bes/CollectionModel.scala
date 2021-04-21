@@ -37,12 +37,12 @@ abstract class CollectionModel extends Model {
     }
   }
 
-  def iterator: Unit = { 
+//  def iterator: Unit = {
     //val it = collection.iterator()
     //it.next()
     //val modelIt = new IteratorModel(this, it)
     //launch(modelIt)
-  }
+//  }
 
   def size: Unit = {
     assert (collection.size == n,

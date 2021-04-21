@@ -1,6 +1,6 @@
-package modbat.examples.bes;
+package modbat.examples.bes.old;
 
-public class ElevatorSystem
+public class old_ElevatorSystem
 {
 
     private boolean doorOpened = false;
@@ -10,7 +10,7 @@ public class ElevatorSystem
     private boolean warningHappen = false;
 
 
-    public ElevatorSystem() { }
+    public old_ElevatorSystem() { }
 
     public boolean moveElevator(int requestingFloor)       //todo have a similar method that call this method and that have a while(doorOpened){wait}??
     {
@@ -58,12 +58,16 @@ public class ElevatorSystem
         return doorOpened;
     }
 
+    public void setDoorOpened(boolean doorOpened) {
+        this.doorOpened = doorOpened;
+    }
+
     public int getCurrentFloor() {
         return currentFloor;
     }
 
-    public boolean isWarningHappen() {
-        return warningHappen;
+    public void setCurrentFloor(int currentFloor) {
+        this.currentFloor = currentFloor;
     }
 
     public void requestElevator(int requestingFloor)
@@ -79,6 +83,10 @@ public class ElevatorSystem
 
 
 
+    private void waitUntilReachingDistance()
+    {
+        for (int i = 0; i < 1000000; i++){}
+    }
 
 
 

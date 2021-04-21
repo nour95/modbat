@@ -1,137 +1,141 @@
 package modbat.examples.bes.undone
 
+import modbat.examples.bes.JavaNioServerSocket3SUT
 import modbat.dsl._
 //import gov.nasa.jpf.util.test.TestJPF
-import java.net.InetSocketAddress
-import java.nio.ByteBuffer
-import java.nio.channels.{ClosedByInterruptException, ServerSocketChannel, SocketChannel}
 
 class JavaNioServerSocket3 extends Model {
-  var ch: ServerSocketChannel = null
-  var connection: SocketChannel = null
-  var client: TestClient = null
-  var count: Int = 0
-  var port: Int = 0
 
-  class TestClient extends Thread {    //todo very similar
-    override def run(): Unit = {
-      try {
-	val connection = SocketChannel.open()
-	connection.connect(new InetSocketAddress("localhost", port))
-	val buf = ByteBuffer.allocate(2)
-	buf.put(42.asInstanceOf[Byte])
-	buf.put(254.asInstanceOf[Byte])
-	buf.flip()
-	connection.write(buf)
-	connection.close()
-      } catch {
-        case e: ClosedByInterruptException => {
-	  if (connection != null) {
-            connection.socket().close()
-	  }
-	}
-      }
-    }
-  }
 
-  def toggleBlocking(ch: ServerSocketChannel): Unit = {
-    ch.configureBlocking(!ch.isBlocking())
-  }
+  val system: JavaNioServerSocket3SUT = new JavaNioServerSocket3SUT();
 
   @After def cleanup(): Unit = {
-    if (connection != null) {
-      connection.close()
-      connection = null
-    }
-    if (ch != null) {
-      ch.close()
-      ch = null
-    }
-    if (client != null) {
-      client.interrupt()
-      client = null
-    }
+      system.cleanup();
   }
 
-  def readFrom(ch: SocketChannel): Unit = {
-    val buf = ByteBuffer.allocate(1)
-    val ret = ch.read(buf)
-    count += 1
-    if (count < 3) {
-      assert (ret == 1, { "1 != (ret == " + ret + ")" })
+
+  def readFrom(): Unit = {
+    val ret = system.readFrom();
+    system.incrementCountByOne()
+    if (system.getCount < 3) {
+      assert(ret == 1, {"1 != (ret == " + ret + ")"})
     } else {
-      assert (ret == -1, { "-1 != (ret == " + ret + ")" })
+      assert(ret == -1, {"-1 != (ret == " + ret + ")"})
     }
   }
 
   def startClient: Unit = {
-    assert(client == null)
-    client = new TestClient()
-//    if (!TestJPF.isJPFRun()) {
-      client.run()
-//    }
-    count = 0
+    assert(system.getClient == null)
+    system.startClient()
   }
+
 
   // transitions
   "reset" -> "open" := {
-    ch = ServerSocketChannel.open()
+    system.openChannel();
   }
+
   "open" -> "open" := {
-    toggleBlocking(ch)
+    system.toggleBlocking()
   }
+
   "open" -> "bound" := {
-    ch.socket().bind(new InetSocketAddress("localhost", 0))
-    port = ch.socket().getLocalPort()
+    system.bindAndSetPort();
   }
+
   "bound" -> "bound" := {
-    toggleBlocking(ch)
+    system.toggleBlocking()
   }
+
   "open" -> "open" := {
-    connection = ch.accept()
+    system.acceptChannel();
   } throws ("NotYetBoundException")
 
   "bound" -> "connected" := {
-    require(ch.isBlocking())
+    require(system.isBlocking)
     startClient
-    connection = ch.accept()
+    system.acceptChannel()
   }
+
   "bound" -> "accepting" := {
-    require(!ch.isBlocking())
+    require(!system.isBlocking)
     startClient
   }
 
-  "accepting" -> "accepting" := {
-    assert(client != null)
-    connection = null
-    maybe (connection = ch.accept())
-  } nextIf { () => connection != null} -> "connected"
+//  "accepting" -> "accepting" := {
+//    assert(system.getClient != null)
+//    system.setConnection(null)
+//    maybe(system.acceptChannel())
+//
+//  } nextIf { () => system.getConnection != null } -> "connected"
+
+  "accepting" -> "intermediateAccept" := {
+    assert(system.getClient != null)
+    system.setConnection(null)
+    maybe(system.acceptChannel())
+
+  } //nextIf { () => connection != null} -> "connected"
+
+  "intermediateAccept" -> "connected" := {
+    require(system.getConnection != null)
+
+  }
+
+  "intermediateAccept" -> "accepting" := {
+    require(system.getConnection == null)
+
+  }
+
 
   "connected" -> "connected" := {
-    readFrom(connection)
+    readFrom()
   }
+
   "connected" -> "bound" := {
-    connection.close()
-    client = null
+
+    system.closeConnection()
+    system.setClient(null)
   }
+
   "accepting" -> "bound" := {
-    client.interrupt()
-    client = null
+    system.interruptClient()
+    system.setClient(null)
+
   }
   List("open", "bound", "accepting", "closed") -> "closed" := {
-    ch.close()
+    system.closeChannel();
   }
 
-  "closed" -> "closed" := {                     //todo and it has an extra transition that is very wired
-    require (connection != null)
-    readFrom(connection)
+  "closed" -> "closed" := {
+    require(system.getConnection != null)
+    readFrom()
+
   } throws ("ClosedChannelException")
 
-  "closed" -> "closed" := {     //todo this is the only difference??
+  "closed" -> "closed" := {
     choose(
-      { () => ch.socket().bind(new InetSocketAddress("localhost", 0)) },
-      { () => toggleBlocking(ch) },
-      { () => ch.accept() }
+      { () => system.onlyBind() },
+      { () => system.toggleBlocking() },
+      { () => system.acceptChannel() }
     )
   } throws ("ClosedChannelException")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

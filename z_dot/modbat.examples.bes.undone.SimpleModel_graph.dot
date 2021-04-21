@@ -1,0 +1,18 @@
+digraph model {
+  graph [ rankdir = "TB", ranksep="0.4", nodesep="0.2" ];
+  node [ fontname = "Helvetica", fontsize="12.0", margin="0.07" ];
+  edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
+  "" [ shape = "point", height="0.1" ];
+  "" -> reset
+  one	-> two [ label = " inc " ];
+  reset	-> zero [ label = " new SimpleCounterBES " ];
+  reset	-> fourOrFive [ label = " setIncrementBy " ];
+  two	-> end [ label = " assert " ];
+  fourInc	-> end [ label = " assert " ];
+  fiveInc	-> end [ label = " assert " ];
+  zero	-> zero [ label = " setIncrementBy " ];
+  zero	-> one [ label = " inc " ];
+  zero	-> two [ label = " inc2 " ];
+  fourOrFive	-> fourInc [ label = " inc2 " ];
+  fourOrFive	-> fiveInc [ label = " inc " ];
+}

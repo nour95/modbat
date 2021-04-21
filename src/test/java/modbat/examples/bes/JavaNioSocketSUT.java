@@ -7,15 +7,14 @@ import java.nio.channels.*;
 
 public class JavaNioSocketSUT {
 
-    int port = 0;
-    TestServer server = null;
+    static int port = 0;
+    static TestServer server = null;
 
 //    private class JavaNioSocket
 //    {
 //        int port = 0;
 
-
-    private class TestServer extends Thread {
+    private static class TestServer extends Thread {
         ServerSocketChannel ch = null;
 
 
@@ -49,23 +48,27 @@ public class JavaNioSocketSUT {
 
 
             } catch (IOException e) {
-                System.out.println(e);
+                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
 
-//    public void startServer()
-//    {
-//            this.start();
-//    }
 
-//    public void shutdown() {
-//            this.interrupt()
-//    }
-//}
+    public static void startServer() throws IOException
+    {
+        //server = new TestServer();
+        server.start();
+    }
+
+    public static void shutdown()
+    {
+        server.interrupt();
+    }
+
 
     SocketChannel connection = null;
-    boolean connected = false; // track ret. val. of non-blocking connect
+    boolean isConnected = false; // track ret. val. of non-blocking connect
     int n = 0; // number of bytes read so far
 
     public void cleanup() throws IOException {
@@ -121,18 +124,18 @@ public class JavaNioSocketSUT {
         Thread.sleep(x);
     }
 
-    public void connectConnection() throws ClosedChannelException, AlreadyConnectedException, ConnectionPendingException, IOException {
-        connect(connection);
+    public boolean connectConnection() throws ClosedChannelException, AlreadyConnectedException, ConnectionPendingException, IOException {
+        return connect(connection);
     }
 
-    public void connectConnectionAndSetConnected() throws ClosedChannelException, AlreadyConnectedException, ConnectionPendingException, IOException { //todo may simplify this?? like make a call to connect from outside
-        connected = connect(connection);
-    }
+//    public void connectConnectionAndSetConnected() throws ClosedChannelException, AlreadyConnectedException, ConnectionPendingException, IOException { //todo may simplify this?? like make a call to connect from outside
+//        connected = connect(connection);
+//    }
 
-    public void finishConnectAndSetConnected() throws ClosedChannelException, NoConnectionPendingException, IOException {  //todo may remove this too
-
-        connected = connection.finishConnect();
-    }
+//    public void finishConnectAndSetConnected() throws ClosedChannelException, NoConnectionPendingException, IOException {  //todo may remove this too
+//
+//        connected = connection.finishConnect();
+//    }
 
     public boolean finishConnect() throws ClosedChannelException, NoConnectionPendingException, IOException {
         return connection.finishConnect();
@@ -144,8 +147,7 @@ public class JavaNioSocketSUT {
     }
 
 
-    public void readAndMaybeIncrementN() throws ClosedChannelException, NotYetConnectedException, IOException {
-        int l = readFrom(connection, n);
+    public void maybeIncrementN(int l) throws ClosedChannelException, NotYetConnectedException, IOException {
         if (l > 0) {
             n = n + l;
         }
@@ -156,4 +158,26 @@ public class JavaNioSocketSUT {
     }
 
 
+
+
+    // getters:
+    public SocketChannel getConnection() {
+        return connection;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public int getN() {
+        return n;
+    }
+
+
+    //setters:
+
+
+    public void setConnected(boolean connected) {
+        this.isConnected = connected;
+    }
 }

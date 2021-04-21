@@ -1,13 +1,11 @@
-package modbat.examples.bes.undone
-
-import modbat.examples.bes.CollectionModel
+package modbat.examples.bes
 
 class LinkedListModel extends CollectionModel {
   override val collection = new java.util.LinkedList[Integer]
 
-  override def iterator: Unit = {
-    val it = collection.listIterator()
+//  override def iterator: Unit = {
+//    val it = collection.listIterator()
     //val modelIt = new ListIteratorModel(this, it)
     //launch(modelIt)
-  }
+//  }
 }

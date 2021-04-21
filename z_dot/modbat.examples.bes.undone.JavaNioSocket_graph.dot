@@ -6,23 +6,23 @@ digraph model {
   "" -> reset
   connected	-> err [ label = " AlreadyConnectedException " color = "red" ];
   connected	-> connected [ label = " finishConnect " ];
-  connected	-> connected [ label = " n " ];
-  connected	-> closed [ label = " close " ];
-  reset	-> open [ label = " open " ];
+  connected	-> connected [ label = " maybeIncrementN " ];
+  connected	-> closed [ label = " closeConnection " ];
+  reset	-> open [ label = " openChannel " ];
   maybeconnected	-> maybeconnected [ label = " toggleBlocking " ];
   maybeconnected	-> connected [ label = " finishConnect " ];
   maybeconnected	-> maybeconnected [ label = " sleep " ];
   maybeconnected	-> connected [ label = " (sleep) " style = "dashed" ];
   maybeconnected	-> err [ label = " ConnectionPendingException " color = "red" ];
   maybeconnected	-> err [ label = " NotYetConnectedException " color = "red" ];
-  maybeconnected	-> closed [ label = " close " ];
+  maybeconnected	-> closed [ label = " closeConnection " ];
   open	-> open [ label = " toggleBlocking " ];
-  open	-> connected [ label = " connect " ];
-  open	-> maybeconnected [ label = " finishConnect " ];
-  open	-> connected [ label = " (finishConnect) " style = "dashed" ];
+  open	-> connected [ label = " connectConnection " ];
+  open	-> maybeconnected [ label = " setConnected " ];
+  open	-> connected [ label = " (setConnected) " style = "dashed" ];
   open	-> err [ label = " NoConnectionPendingException " color = "red" ];
   open	-> err [ label = " NotYetConnectedException " color = "red" ];
-  open	-> closed [ label = " close " ];
-  closed	-> closed [ label = " close " ];
+  open	-> closed [ label = " closeConnection " ];
+  closed	-> closed [ label = " closeConnection " ];
   closed	-> err [ label = " ClosedChannelException " color = "red" ];
 }

@@ -1,9 +1,9 @@
-package modbat.examples.bes.undone
+package modbat.examples.bes.undone.old
 
 import modbat.dsl._
 import modbat.examples.bes.ElevatorSystem
 
-class ElevatorModel extends Model {
+class old_ElevatorModel extends Model {
   var system: ElevatorSystem = _;
 
   // transitions
@@ -49,29 +49,23 @@ class ElevatorModel extends Model {
     assert(success)
     assert(system.getCurrentFloor == 1)
     assert(!system.isDoorOpened) //
-  } label "moveToOne"
+  }
 
   "MoveToFloorZero" -> "DoorOpened" := {
     require(!system.isDoorOpened)
     require(system.getCurrentFloor == 0)
     system.openDoor();
     assert(system.isDoorOpened)
-  } label "open"
+  }
 
   "MoveToFloorOne" -> "DoorOpened" := {
     require(!system.isDoorOpened)
     require(system.getCurrentFloor == 1)
     system.openDoor();
     assert(system.isDoorOpened)
-  } label "open"
+  }
 
-  "DoorClosed" -> "WarningCheck" := {
-    assert(! system.isWarningHappen)
-  } label "checkWarning"
 
- // "DoorClosed" -> "End" := skip   //todo add warning check here or
-
-  "WarningCheck" -> "End" := skip
-
+  "DoorClosed" -> "End" := skip
 
 }

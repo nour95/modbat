@@ -8,13 +8,13 @@ import java.nio.channels.NotYetBoundException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class JavaNioServerSocket2SUT extends Thread {
+public class JavaNioServerSocket3SUT extends Thread {
 
     private ServerSocketChannel ch = null;
     private SocketChannel connection = null;
     private TestClient client = null;
     private int port = 0;
-    private int count;
+    private int count = 0;
 
     private class TestClient extends Thread
     {
@@ -93,9 +93,13 @@ public class JavaNioServerSocket2SUT extends Thread {
     }
 
 
-    public void bind() throws IOException {
+    public void bindAndSetPort() throws IOException {
         ch.socket().bind(new InetSocketAddress("localhost", 0));
         port = ch.socket().getLocalPort();
+    }
+
+    public void onlyBind() throws IOException {
+        ch.socket().bind(new InetSocketAddress("localhost", 0));
     }
 
     public void acceptChannel() throws NotYetBoundException, IOException {
@@ -154,5 +158,9 @@ public class JavaNioServerSocket2SUT extends Thread {
 
     public void setClient(TestClient client) {
         this.client = client;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

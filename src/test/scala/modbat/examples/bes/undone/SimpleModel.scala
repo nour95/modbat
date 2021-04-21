@@ -1,27 +1,63 @@
 package modbat.examples.bes.undone
 
 import modbat.dsl._
-import modbat.examples.SimpleCounter
+import modbat.examples.bes.SimpleCounterBES
 
 class SimpleModel extends Model {
-  var counter: SimpleCounter = _
+  var counter: SimpleCounterBES = _
 
   // transitions
   "reset" -> "zero" := {
-    counter = new SimpleCounter()
+    counter = new SimpleCounterBES()
   }
+
+  "reset" -> "fourOrFive" := {
+    counter = new SimpleCounterBES()
+    counter.setValue(choose(4, 5))
+    counter.setIncrementBy(choose(1, 2))
+  }
+
+  "fourOrFive" -> "fourInc" := {
+    require(counter.getIncrementBy == 4)
+    require(counter.getIncrementBy == 2)
+    counter.inc2()
+  }
+
+  "fourOrFive" -> "fiveInc" := {
+    require(counter.getIncrementBy == 5)
+    require(counter.getIncrementBy == 1)
+    counter.inc()
+  }
+
+  "fourInc" -> "end" := {
+    assert (counter.value == 6)
+  }
+
+  "fiveInc" -> "end" := {
+    assert (counter.value == 6)
+  }
+
+
   "zero" -> "zero" := {
-    counter.toggleSwitch
+    counter.toggleSwitch()
+    counter.setIncrementBy(choose(1, 3))
   }
+
   "zero" -> "one" := {
-    counter.inc
+    require(counter.getIncrementBy == 1)  //todo require flag = true??
+    counter.inc()
   }
+
   "one" -> "two" := {
-    counter.inc
+    require(counter.getIncrementBy == 1)
+    counter.inc()
   }
+
   "zero" -> "two" := {
-    counter.inc2
+    require(counter.getIncrementBy == 2)
+    counter.inc2()
   }
+
   "two" -> "end" := {
     assert (counter.value == 2)
   }
