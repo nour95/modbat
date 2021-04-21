@@ -19,6 +19,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   var currentTrieNode: TrieNode[Edge[StateData, EdgeData]] = _;
   var leafReached = false;
   var rootIsMarked = false;
+  var totalPathsNumber = 0;
 
 
   initializeExhaustiveTrie(graph, firstModelInstance, config)
@@ -34,6 +35,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
     trieBuilder.runBuilder(graph, initEdge, depth)
 
     trie = trieBuilder.getTrie;
+    totalPathsNumber = trie.countLeaf();
     firstModelInstance.exhaustiveTrie = trie;
 
     currentTrieNode = trie.getRoot
@@ -44,7 +46,7 @@ class IterativeDepthSearch(graph: Graph[StateData, EdgeData], firstModelInstance
   {
 
     if (trie != null)
-      trie.countLeaf()
+      totalPathsNumber
     else
       0
   }

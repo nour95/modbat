@@ -1,0 +1,25 @@
+digraph model {
+  graph [ rankdir = "TB", ranksep="0.4", nodesep="0.2" ];
+  node [ fontname = "Helvetica", fontsize="12.0", margin="0.07" ];
+  edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
+  "" [ shape = "point", height="0.1" ];
+  "" -> reset
+  connected	-> connected [ label = " readFrom " ];
+  connected	-> bound [ label = " setClient " ];
+  bound	-> bound [ label = " toggleBlocking " ];
+  bound	-> connected [ label = " acceptChannel " ];
+  bound	-> accepting [ label = " startClient " ];
+  bound	-> closed [ label = " closeChannel " ];
+  reset	-> open [ label = " openChannel " ];
+  accepting	-> intermediateAccept [ label = " acceptChannel " ];
+  accepting	-> bound [ label = " setClient " ];
+  accepting	-> closed [ label = " closeChannel " ];
+  open	-> open [ label = " toggleBlocking " ];
+  open	-> bound [ label = " bind " ];
+  open	-> err [ label = " NotYetBoundException " color = "red" ];
+  open	-> closed [ label = " closeChannel " ];
+  intermediateAccept	-> connected [ label = " require " ];
+  intermediateAccept	-> accepting [ label = " require " ];
+  closed	-> closed [ label = " closeChannel " ];
+  closed	-> err [ label = " ClosedChannelException " color = "red" ];
+}

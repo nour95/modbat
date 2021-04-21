@@ -210,9 +210,9 @@ run 0 $APP --mode=dot --auto-labels modbat.examples.CounterModel
 savemv modbat.examples.CounterModel.dot counter.dot
 checkfile counter.dot
 
-run 0 $APP -s=1 -n=30 --no-redirect-out modbat.examples.CounterModel2
-run 0 $APP --mode=dot --auto-labels modbat.examples.CounterModel2
-savemv modbat.examples.CounterModel2.dot counter2.dot
+run 0 $APP -s=1 -n=30 --no-redirect-out modbat.examples.bes.undone.CounterModel2
+run 0 $APP --mode=dot --auto-labels modbat.examples.bes.undone.CounterModel2
+savemv modbat.examples.bes.undone.CounterModel2.dot counter2.dot
 checkfile counter2.dot
 
 export CLASSPATH=build/modbat-test.jar

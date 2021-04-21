@@ -388,6 +388,11 @@ class Modbat(val mbt: MBT) {
       mbt.log.info(
         modelStr + nCoveredTrans + " transitions covered (" +
           nCoveredTrans * 100 / nTrans + " % out of " + nTrans + ").")
+
+      if (mbt.config.search == "exhaustive") { //Nour
+        mbt.log.info("Trie in the model " + modelInst.name + " has " + modelInst.iterativeDepthSearch.getLeafCount() + " different path") //todo
+      }
+
     }
     preconditionCoverage
     randomSeed = (masterRNG.z << 32 | masterRNG.w)
@@ -613,11 +618,11 @@ class Modbat(val mbt: MBT) {
   def exhaustiveChoice(choices: List[(ModelInstance, Transition)], totalW: Double, currentModelInstance : ModelInstance):(ModelInstance, Transition) =
   {
 
-    if(currentModelInstance.className == "modbat.examples.listit.ListIteratorModel")
-    {
-      val x = 5
-      out.print(x);
-    }
+//    if(currentModelInstance.className == "modbat.examples.listit.ListIteratorModel")
+//    {
+//      val x = 5
+//      out.print(x);
+//    }
     val iterativeDepthSearch = currentModelInstance.iterativeDepthSearch;
     val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
 

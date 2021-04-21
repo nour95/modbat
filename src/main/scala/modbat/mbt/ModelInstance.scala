@@ -169,7 +169,7 @@ class ModelInstance (val mbt: MBT, val model: Model,
         this.iterativeDepthSearch = iterativeSearch;
 
         mbt.origLog.out.println("Trie in the model " + this.name + " has " + iterativeSearch.getLeafCount() + " different path")
-        mbt.log.info("Trie in the model " + this.name + " has " + iterativeSearch.getLeafCount() + " different path") //todo
+        //mbt.log.info("Trie in the model " + this.name + " has " + iterativeSearch.getLeafCount() + " different path") //todo
         iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
       }
     }
