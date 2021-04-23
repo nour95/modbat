@@ -39,6 +39,14 @@ public class Trie<T> //todo need dotify to this too
             return;
         }
 
+//        if (removeLoops)
+//        {
+//            if(!parentsAllChildren.contains(newNode) && !newNode.equals(parentNode) )
+//                parentsAllChildren.add(newNode);
+//            else
+//                return;
+//        }
+
         if (!parentsAllChildren.contains(newNode))
             parentsAllChildren.add(newNode);
 
@@ -53,6 +61,7 @@ public class Trie<T> //todo need dotify to this too
         else
             trieNode = new TrieNodeDetails<T>(newNode, currentLevel, (TrieNodeDetails<T>) parentTrieNode, id);
 
+//        System.out.println(trieNode);
         if (!neighbours.containsKey(trieNode))
             neighbours.put(trieNode, new LinkedList<TrieNode<T>>());
         return trieNode;
@@ -104,6 +113,18 @@ public class Trie<T> //todo need dotify to this too
     public TrieNode<T> findUnvisitedNode(TrieNode<T> parent)
     {
         LinkedList<TrieNode<T>> childrenList =  neighbours.get(parent);
+
+//        if(removeLoops)
+//        {
+//            for (TrieNode<T> node : childrenList)
+//            {
+//                if (! node.isVisited() && !node.equals(parent))
+//                    return node;
+//                //todo else remove from list ?? increase effeicincy
+//
+//            }
+//            return null;
+//        }
 
         for (TrieNode<T> node : childrenList)
         {

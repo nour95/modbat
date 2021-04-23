@@ -1,0 +1,18 @@
+digraph model {
+  graph [ rankdir = "TB", ranksep="0.4", nodesep="0.2" ];
+  node [ fontname = "Helvetica", fontsize="12.0", margin="0.07" ];
+  edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
+  {
+    node []
+     "0" [label= "edge: null -> 'one' at level 0 with parent: null"]
+     "2" [label= "edge: 'one' -> 'three' at level 1 with parent: edge: null -> 'one' (choose) "]
+     "4" [label= "edge: 'four' -> 'five' at level 3 with parent: edge: 'three' -> 'four' (four => five) " color = "red"]
+     "3" [label= "edge: 'three' -> 'four' at level 2 with parent: edge: 'one' -> 'three' (three => four) "]
+     "1" [label= "edge: 'one' -> 'two' at level 1 with parent: edge: null -> 'one' (new NullPointerEx...) " color = "red"]
+  }
+
+  "0" -> "1";
+  "0" -> "2";
+  "2" -> "3";
+  "3" -> "4";
+}

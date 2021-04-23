@@ -112,7 +112,49 @@ task jarExamples(type: Jar) {
     exclude "modbat/mbt"
     exclude "modbat/test"
     exclude "modbat/tutorial"
+    exclude "modbat/bes"
+
 }
+
+//Nour:
+task mkBESDir {
+    mkdir "$buildDir/besJar"
+}
+
+task cpBESSrc(type: Copy) {
+    from "src/test/scala/modbat/bes"
+    from "src/test/java/modbat/bes"
+    into "$buildDir/besJar/modbat/bes"
+}
+
+task cpBESLicense(type: Copy) {
+    from "LICENSE"
+    into "$buildDir/besJar"
+}
+
+task cpBESModbatJar(type: Copy) {
+    from "$buildDir/modbat.jar"
+    into "$buildDir/besJar/modbat/bes"
+
+}
+
+task jarBES(type: Jar) {
+    archiveName = "modbat-bes.jar"
+    destinationDir = file("$buildDir")
+
+    from "$buildDir/classes/scala/test" include "modbat/bes/**"
+    from "$buildDir/classes/java/test" include "modbat/bes/**"
+    from "$buildDir/besJar" include "**/*.scala"
+    from "$buildDir/besJar" include "**/*.java"
+    from "$buildDir/besJar" include "LICENSE"
+    from "$buildDir/besJar" include "modbat.jar"   //todo may remove this
+    exclude "modbat/mbt"
+    exclude "modbat/test"
+    exclude "modbat/tutorial"
+    exclude "modbat/examples"
+}
+
+// ----------
 
 task mkTutorialDir {
     mkdir "$buildDir/tutorialJar"
@@ -146,6 +188,8 @@ task jarTutorial(type: Jar) {
     exclude "modbat/mbt"
     exclude "modbat/test"
     exclude "modbat/examples"
+    exclude "modbat/bes"
+
 }
 
 task testsJar(type: Jar) {
@@ -156,6 +200,8 @@ task testsJar(type: Jar) {
     from "$buildDir/classes/java/test" findAll { it.name.endsWith('class') }.collect { zipTree(it) }
     exclude "modbat/examples"
     exclude "modbat/tutorial"
+    exclude "modbat/bes"
+
 }
 
 tasks.withType(Test)  {
@@ -179,15 +225,26 @@ task tutorialJar {
   dependsOn jarTutorial
 }
 
+task BESJar {
+    dependsOn jar
+    dependsOn mkBESDir
+    dependsOn cpBESLicense
+    dependsOn cpBESSrc
+    dependsOn cpBESModbatJar
+    dependsOn jarBES
+}
+
 test {
-  dependsOn compileTestJava
-  dependsOn compileTestScala
-  dependsOn examplesJar
-  dependsOn tutorialJar
-  dependsOn testsJar
+    dependsOn compileTestJava
+    dependsOn compileTestScala
+    dependsOn examplesJar
+    dependsOn BESJar
+    dependsOn tutorialJar
+    dependsOn testsJar
 }
 
 assemble {
   dependsOn examplesJar
   dependsOn tutorialJar
+  dependsOn BESJar
 }

@@ -390,7 +390,8 @@ class Modbat(val mbt: MBT) {
           nCoveredTrans * 100 / nTrans + " % out of " + nTrans + ").")
 
       if (mbt.config.search == "exhaustive") { //Nour
-        mbt.log.info("Trie in the model " + modelInst.name + " has " + modelInst.iterativeDepthSearch.getLeafCount() + " different path") //todo
+        mbt.origLog.out.println("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
+        //mbt.log.info("Trie in the model " + modelInst.name + " has " + modelInst.iterativeDepthSearch.getLeafCount() + " different path") //todo
       }
 
     }
