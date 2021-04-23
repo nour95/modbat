@@ -1,5 +1,7 @@
 package modbat.graphadaptor.trie;
 
+import modbat.graph.Edge;
+import modbat.graph.Node;
 import modbat.graphadaptor.trie.trienode.TrieNode;
 import modbat.graphadaptor.trie.trienode.RawTrieNode;
 import modbat.graphadaptor.trie.trienode.TrieNodeDetails;
@@ -7,7 +9,7 @@ import modbat.graphadaptor.trie.trienode.TrieNodeDetails;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Trie<T> //todo need dotify to this too
+public class Trie<T extends Edge> //todo need dotify to this too
 {
     private TrieNode<T> root;
     private Map<TrieNode<T>, LinkedList<TrieNode<T>>> neighbours = new HashMap<>();
@@ -34,17 +36,9 @@ public class Trie<T> //todo need dotify to this too
     {
         LinkedList<TrieNode<T>> parentsAllChildren = neighbours.get(parentNode);
 
-        if (parentsAllChildren == null) {
-            //System.out.println("That is wired");
-            return;
-        }
-
-//        if (removeLoops)
-//        {
-//            if(!parentsAllChildren.contains(newNode) && !newNode.equals(parentNode) )
-//                parentsAllChildren.add(newNode);
-//            else
-//                return;
+//        if (parentsAllChildren == null) {
+//            //System.out.println("That is wired");
+//            return;
 //        }
 
         if (!parentsAllChildren.contains(newNode))
@@ -57,9 +51,24 @@ public class Trie<T> //todo need dotify to this too
     {
         TrieNode<T> trieNode;
         if(removeLoops)
-            trieNode = new RawTrieNode<T>(newNode, currentLevel, (RawTrieNode<T>) parentTrieNode, id);
-        else
-            trieNode = new TrieNodeDetails<T>(newNode, currentLevel, (TrieNodeDetails<T>) parentTrieNode, id);
+        {
+
+            if(parentTrieNode != null && newNode.equals(parentTrieNode.getData())
+                    && parentTrieNode.getParent() != null &&  parentTrieNode.getData().equals(parentTrieNode.getParent().getData())) {
+                return null;
+            }
+
+            if (parentTrieNode != null && newNode.equals(parentTrieNode.getData()) && parentTrieNode.getParent() != null)
+            {
+                Edge p = (Edge) parentTrieNode.getParent().getData();
+                if (p.getSource() == null && p.getDestination() == (Node) parentTrieNode.getData().getDestination() )
+                    return null;
+            }
+
+
+        }
+
+        trieNode = new TrieNodeDetails<T>(newNode, currentLevel, (TrieNodeDetails<T>) parentTrieNode, id);
 
 //        System.out.println(trieNode);
         if (!neighbours.containsKey(trieNode))
@@ -113,19 +122,6 @@ public class Trie<T> //todo need dotify to this too
     public TrieNode<T> findUnvisitedNode(TrieNode<T> parent)
     {
         LinkedList<TrieNode<T>> childrenList =  neighbours.get(parent);
-
-//        if(removeLoops)
-//        {
-//            for (TrieNode<T> node : childrenList)
-//            {
-//                if (! node.isVisited() && !node.equals(parent))
-//                    return node;
-//                //todo else remove from list ?? increase effeicincy
-//
-//            }
-//            return null;
-//        }
-
         for (TrieNode<T> node : childrenList)
         {
             if (! node.isVisited())

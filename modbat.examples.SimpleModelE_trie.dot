@@ -4,7 +4,121 @@ digraph model {
   edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
   {
     node []
-     "0" [label= "edge: null -> 'reset' at level 0 with parent: null" color = "red"]
+     "40" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one' (inc) " color = "red"]
+     "18" [label= "edge: 'zero' -> 'zero' at level 3 with parent: edge: 'reset' -> 'zero' (toggleSwitch) "]
+     "33" [label= "edge: 'fourInc' -> 'end' at level 4 with parent: edge: 'fourOrFive' -> 'fourInc' (assert) " color = "red"]
+     "12" [label= "edge: 'reset' -> 'fourOrFive' at level 3 with parent: edge: 'reset' -> 'reset' (new SimpleCounter) "]
+     "29" [label= "edge: 'zero' -> 'two' at level 3 with parent: edge: 'reset' -> 'zero' (inc2) "]
+     "32" [label= "edge: 'fourOrFive' -> 'fourInc' at level 3 with parent: edge: 'reset' -> 'fourOrFive' (inc2) "]
+     "43" [label= "edge: 'zero' -> 'one' at level 3 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "19" [label= "edge: 'zero' -> 'zero' at level 4 with parent: edge: 'zero' -> 'zero' (toggleSwitch) "]
+     "17" [label= "edge: 'reset' -> 'zero' at level 2 with parent: edge: 'reset' -> 'reset' (new SimpleCounter) "]
+     "48" [label= "edge: 'zero' -> 'one' at level 2 with parent: edge: 'reset' -> 'zero' (inc) "]
+     "24" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "42" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "6" [label= "edge: 'zero' -> 'one' at level 5 with parent: edge: 'zero' -> 'zero' (inc) " color = "red"]
+     "30" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "39" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "16" [label= "edge: 'fiveInc' -> 'end' at level 5 with parent: edge: 'fourOrFive' -> 'fiveInc' (assert) " color = "red"]
+     "26" [label= "edge: 'zero' -> 'one' at level 3 with parent: edge: 'reset' -> 'zero' (inc) "]
+     "54" [label= "edge: 'fourOrFive' -> 'fourInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc2) "]
+     "28" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "34" [label= "edge: 'fourOrFive' -> 'fiveInc' at level 3 with parent: edge: 'reset' -> 'fourOrFive' (inc) "]
+     "23" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one' (inc) " color = "red"]
+     "4" [label= "edge: 'zero' -> 'zero' at level 4 with parent: edge: 'reset' -> 'zero' (toggleSwitch) "]
+     "36" [label= "edge: 'reset' -> 'zero' at level 1 with parent: edge: null -> 'reset' (new SimpleCounter) "]
+     "38" [label= "edge: 'zero' -> 'zero' at level 3 with parent: edge: 'zero' -> 'zero' (toggleSwitch) "]
+     "0" [label= "edge: null -> 'reset' at level 0 with parent: null"]
+     "37" [label= "edge: 'zero' -> 'zero' at level 2 with parent: edge: 'reset' -> 'zero' (toggleSwitch) "]
+     "7" [label= "edge: 'zero' -> 'two' at level 5 with parent: edge: 'zero' -> 'zero' (inc2) " color = "red"]
+     "49" [label= "edge: 'one' -> 'two' at level 3 with parent: edge: 'zero' -> 'one' (inc) "]
+     "20" [label= "edge: 'zero' -> 'one' at level 5 with parent: edge: 'zero' -> 'zero' (inc) " color = "red"]
+     "41" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "50" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "1" [label= "edge: 'reset' -> 'reset' at level 1 with parent: edge: null -> 'reset' (new SimpleCounter) "]
+     "21" [label= "edge: 'zero' -> 'two' at level 5 with parent: edge: 'zero' -> 'zero' (inc2) " color = "red"]
+     "47" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "22" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "44" [label= "edge: 'one' -> 'two' at level 4 with parent: edge: 'zero' -> 'one' (inc) "]
+     "57" [label= "edge: 'fiveInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fiveInc' (assert) " color = "red"]
+     "2" [label= "edge: 'reset' -> 'reset' at level 2 with parent: edge: 'reset' -> 'reset' (new SimpleCounter) "]
+     "52" [label= "edge: 'two' -> 'end' at level 3 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "11" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "35" [label= "edge: 'fiveInc' -> 'end' at level 4 with parent: edge: 'fourOrFive' -> 'fiveInc' (assert) " color = "red"]
+     "27" [label= "edge: 'one' -> 'two' at level 4 with parent: edge: 'zero' -> 'one' (inc) "]
+     "55" [label= "edge: 'fourInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fourInc' (assert) " color = "red"]
+     "46" [label= "edge: 'zero' -> 'two' at level 3 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "56" [label= "edge: 'fourOrFive' -> 'fiveInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc) "]
+     "10" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'reset' -> 'zero' (inc2) "]
+     "13" [label= "edge: 'fourOrFive' -> 'fourInc' at level 4 with parent: edge: 'reset' -> 'fourOrFive' (inc2) "]
+     "14" [label= "edge: 'fourInc' -> 'end' at level 5 with parent: edge: 'fourOrFive' -> 'fourInc' (assert) " color = "red"]
+     "9" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one' (inc) " color = "red"]
+     "8" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'reset' -> 'zero' (inc) "]
+     "45" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "15" [label= "edge: 'fourOrFive' -> 'fiveInc' at level 4 with parent: edge: 'reset' -> 'fourOrFive' (inc) "]
+     "51" [label= "edge: 'zero' -> 'two' at level 2 with parent: edge: 'reset' -> 'zero' (inc2) "]
+     "31" [label= "edge: 'reset' -> 'fourOrFive' at level 2 with parent: edge: 'reset' -> 'reset' (new SimpleCounter) "]
+     "3" [label= "edge: 'reset' -> 'zero' at level 3 with parent: edge: 'reset' -> 'reset' (new SimpleCounter) "]
+     "53" [label= "edge: 'reset' -> 'fourOrFive' at level 1 with parent: edge: null -> 'reset' (new SimpleCounter) "]
+     "5" [label= "edge: 'zero' -> 'zero' at level 5 with parent: edge: 'zero' -> 'zero' (toggleSwitch) " color = "red"]
+     "25" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
   }
 
+  "18" -> "19";
+  "18" -> "22";
+  "18" -> "24";
+  "12" -> "13";
+  "12" -> "15";
+  "29" -> "30";
+  "32" -> "33";
+  "43" -> "44";
+  "19" -> "20";
+  "19" -> "21";
+  "17" -> "18";
+  "17" -> "26";
+  "17" -> "29";
+  "48" -> "49";
+  "24" -> "25";
+  "39" -> "40";
+  "26" -> "27";
+  "54" -> "55";
+  "34" -> "35";
+  "4" -> "5";
+  "4" -> "6";
+  "4" -> "7";
+  "36" -> "37";
+  "36" -> "48";
+  "36" -> "51";
+  "38" -> "39";
+  "38" -> "41";
+  "0" -> "1";
+  "0" -> "36";
+  "0" -> "53";
+  "37" -> "38";
+  "37" -> "43";
+  "37" -> "46";
+  "49" -> "50";
+  "41" -> "42";
+  "1" -> "2";
+  "1" -> "17";
+  "1" -> "31";
+  "22" -> "23";
+  "44" -> "45";
+  "2" -> "3";
+  "2" -> "12";
+  "27" -> "28";
+  "46" -> "47";
+  "56" -> "57";
+  "10" -> "11";
+  "13" -> "14";
+  "8" -> "9";
+  "15" -> "16";
+  "51" -> "52";
+  "31" -> "32";
+  "31" -> "34";
+  "3" -> "4";
+  "3" -> "8";
+  "3" -> "10";
+  "53" -> "54";
+  "53" -> "56";
 }

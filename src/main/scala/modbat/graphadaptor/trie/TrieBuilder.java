@@ -48,6 +48,9 @@ public class TrieBuilder<NT, D extends EdgeData>
                 continue;
 
             TrieNode<Edge<NT, D>> childTrieNode = trie.createTrieNode(outGoingEdge, currentLevel, parentTrieNode, counter);
+            if (childTrieNode == null)
+                continue;
+
             counter++;
 
             trie.add(childTrieNode, parentTrieNode);

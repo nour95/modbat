@@ -1,8 +1,10 @@
 package modbat.graphadaptor.trie.trienode;
 
+import modbat.graph.Edge;
+
 import java.util.Objects;
 
-public class TrieNodeDetails<T> implements TrieNode<T>
+public class TrieNodeDetails<T extends Edge> implements TrieNode<T>
 {
     private T data;
     private int level; // level

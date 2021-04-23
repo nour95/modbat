@@ -390,8 +390,9 @@ class Modbat(val mbt: MBT) {
           nCoveredTrans * 100 / nTrans + " % out of " + nTrans + ").")
 
       if (mbt.config.search == "exhaustive") { //Nour
-        mbt.origLog.out.println("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
-        //mbt.log.info("Trie in the model " + modelInst.name + " has " + modelInst.iterativeDepthSearch.getLeafCount() + " different path") //todo
+//        mbt.origLog.out.println("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
+        mbt.log.info("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
+
       }
 
     }
@@ -444,9 +445,9 @@ class Modbat(val mbt: MBT) {
       randomSeed = getRandomSeed
       val seed = randomSeed.toHexString
       failed match {
-        case 0 => mbt.log.out.printf("%8d %16s%n", Integer.valueOf(i), seed)
-        case 1 => mbt.log.out.printf("%8d %16s, one test failed.%n", Integer.valueOf(i), seed)
-        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.%n", Integer.valueOf(i), seed, Integer.valueOf(failed))
+        case 0 => mbt.log.out.printf("%8d %16s", Integer.valueOf(i), seed) //TODO remove %n
+        case 1 => mbt.log.out.printf("%8d %16s, one test failed.", Integer.valueOf(i), seed)  //TODO remove %n
+        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.", Integer.valueOf(i), seed, Integer.valueOf(failed))  //TODO remove %n
       }
       logFile = mbt.config.logPath + "/" + seed + ".log"
       errFile = mbt.config.logPath + "/" + seed + ".err"
@@ -628,7 +629,8 @@ class Modbat(val mbt: MBT) {
     val transitionFromTrie : Transition = iterativeDepthSearch.getCurrentTransition();
 
     if(transitionFromTrie == null) { //todo not sure
-      origOut.println("A null has been returned") //todo
+//      origOut.println("A null has been returned") //todo
+      mbt.log.debug("A null has been returned")
       return null;
     }
 
@@ -637,7 +639,8 @@ class Modbat(val mbt: MBT) {
     for(choice <- choices)
     {
       if(choice._2.idx == transitionFromTrie.idx) {
-        origOut.println("choice: " + transitionFromTrie + " has been chosen from model: " + currentModelInstance.name)
+//        origOut.println("choice: " + transitionFromTrie + " has been chosen from model: " + currentModelInstance.name)
+        mbt.log.debug("choice: " + transitionFromTrie + " has been chosen from model: " + currentModelInstance.name)
         iterativeDepthSearch.moveOnce()
         return choice
       };
@@ -965,7 +968,9 @@ class Modbat(val mbt: MBT) {
 
       if(isExhaustiveSearch && successor == null )
       {
-        origOut.println("Reach a leaf node in exhaustive search.") //todo remove th
+//        origOut.println("Reach a leaf node in exhaustive search.") //todo remove th
+        mbt.log.debug("Reach a leaf node in exhaustive search.")
+
         checkIfPendingModels
         return ((Finished, null), null)
       }
@@ -1043,7 +1048,8 @@ class Modbat(val mbt: MBT) {
 
             if(isExhaustiveSearch)
             {
-              origOut.println("Nour: Backtracking is discovered. ########################")
+//              origOut.println("Nour: Backtracking is discovered. ########################")
+              mbt.log.debug("Nour: Backtracking is discovered. ########################")
               iterativeDepthSearch.restartFromRoot();
               return ((Finished, null), null)
             }
@@ -1056,7 +1062,8 @@ class Modbat(val mbt: MBT) {
               .updateAverageReward(TransitionRewardTypes.FailTransReward)
             assert(TransitionResult.isErr(t))
             printTrace(executedTransitions.toList)
-            origOut.println("Nour test found an error *********************************************************")
+//            origOut.println("Nour test found an error *********************************************************")
+            mbt.log.debug("Nour test found an error *********************************************************")
             if(isExhaustiveSearch)
               iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this
             return (result,

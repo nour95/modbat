@@ -5,9 +5,15 @@ digraph model {
   "" [ shape = "point", height="0.1" ];
   "" -> reset
   one	-> two [ label = " inc " ];
+  reset	-> reset [ label = " new SimpleCounter " ];
   reset	-> zero [ label = " new SimpleCounter " ];
+  reset	-> fourOrFive [ label = " new SimpleCounter " ];
   two	-> end [ label = " assert " ];
+  fourInc	-> end [ label = " assert " ];
+  fiveInc	-> end [ label = " assert " ];
   zero	-> zero [ label = " toggleSwitch " ];
   zero	-> one [ label = " inc " ];
   zero	-> two [ label = " inc2 " ];
+  fourOrFive	-> fourInc [ label = " inc2 " ];
+  fourOrFive	-> fiveInc [ label = " inc " ];
 }
