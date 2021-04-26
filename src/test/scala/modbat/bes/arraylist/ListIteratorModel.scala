@@ -1,4 +1,4 @@
-package modbat.bes.linkedlistmodel
+package modbat.bes.arraylist
 
 //import experiment.util.ListIterator
 import java.util.ConcurrentModificationException

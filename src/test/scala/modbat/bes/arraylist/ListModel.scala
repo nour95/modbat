@@ -1,6 +1,6 @@
-package modbat.bes.linkedlistmodel
+package modbat.bes.arraylist
 
-import java.util.ArrayList
+import modbat.bes.arraylist.ArrayList
 import java.util.Iterator
 import java.util.LinkedList
 import java.util.List
@@ -79,7 +79,7 @@ abstract class ListModel extends Model {
     val index = choose(0, n)
     assert(testData.get(index)== data(index))
   }
-//
+  
 //  def iterator {
 //    val it = testData.iterator()
 //    val modelIt = new IteratorModel(this, it)
@@ -160,7 +160,7 @@ abstract class ListModel extends Model {
       { () => perhapsInvalid; testData.remove(-1) },
       { () => testData.remove(n) },
       { () => testData.set(-1,0) },
-      { () => testData.set(n,0) } //,
+      { () => testData.set(n,0) }//,
 //      { () => testData.listIterator(-1) }
     )
   }

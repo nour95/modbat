@@ -1,9 +1,9 @@
-package modbat.bes.linkedlistmodel
+package modbat.bes.linkedlist
 
 import modbat.dsl._
 
 class LinkedListModel extends ListModel {
-  override val testData = new java.util.LinkedList[Integer]() 
+  override val testData = new modbat.bes.linkedlist.LinkedList[Integer]()
   // override val testData = new experiment.util.LinkedList[Integer]() //for the faulty version (TU library)
 
   def chooseIdx(n: Int) = {
