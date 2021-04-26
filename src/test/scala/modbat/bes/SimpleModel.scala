@@ -17,14 +17,15 @@ class SimpleModel extends Model {
   }
 
   "fourOrFive" -> "fourInc" := {
-    require(counter.getIncrementBy == 4)
+    require(counter.value == 4)
     require(counter.getIncrementBy == 2)
     counter.inc2()
   }
 
   "fourOrFive" -> "fiveInc" := {
-    require(counter.getIncrementBy == 5)
+    require(counter.value == 5)
     require(counter.getIncrementBy == 1)
+
     counter.inc()
   }
 
@@ -48,6 +49,7 @@ class SimpleModel extends Model {
   }
 
   "one" -> "two" := {
+    require(counter.flag)
     require(counter.getIncrementBy == 1)
     counter.inc()
   }

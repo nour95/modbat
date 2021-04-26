@@ -391,6 +391,8 @@ class Modbat(val mbt: MBT) {
 
       if (mbt.config.search == "exhaustive") { //Nour
 //        mbt.origLog.out.println("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
+        mbt.log.info("Depth of trie: " + mbt.config.depth)
+        mbt.log.info("remove loops option of trie: " + mbt.config.removeLoops)
         mbt.log.info("The number of paths in trie for the model " + modelInst.name + ": " + modelInst.iterativeDepthSearch.getLeafCount())
 
       }
@@ -432,10 +434,11 @@ class Modbat(val mbt: MBT) {
   def runTests(n: Int): Unit = {
     for (i <- 1 to n ) { // n is the number of test cases
 
-      var firstInstance = mbt.firstInstance.find(t => ! t._2.iterativeDepthSearch.rootIsMarked)
-      if (mbt.config.search == "exhaustive" && firstInstance.isEmpty)
-      {
-        return ;
+      if(mbt.config.search == "exhaustive") {
+        var firstInstance = mbt.firstInstance.find(t => !t._2.iterativeDepthSearch.rootIsMarked)
+        if (mbt.config.search == "exhaustive" && firstInstance.isEmpty) {
+          return;
+        }
       }
 
       mbt.rng = masterRNG.clone
@@ -1062,7 +1065,7 @@ class Modbat(val mbt: MBT) {
               .updateAverageReward(TransitionRewardTypes.FailTransReward)
             assert(TransitionResult.isErr(t))
             printTrace(executedTransitions.toList)
-//            origOut.println("Nour test found an error *********************************************************")
+            origOut.println("Nour test found an error *********************************************************")
             mbt.log.debug("Nour test found an error *********************************************************")
             if(isExhaustiveSearch)
               iterativeDepthSearch.restartFromRoot(); //TODO Nour: added this

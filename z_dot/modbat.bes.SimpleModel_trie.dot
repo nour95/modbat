@@ -4,59 +4,119 @@ digraph model {
   edge [ fontname = "Helvetica", fontsize="12.0", margin="0.05" ];
   {
     node []
-     "16" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
-     "13" [label= "edge: 'one' -> 'two' at level 4 with parent: edge: 'zero' -> 'one' (inc) "]
-     "9" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one' (inc) " color = "red"]
-     "6" [label= "edge: 'zero' -> 'one' at level 5 with parent: edge: 'zero' -> 'zero' (inc) " color = "red"]
-     "12" [label= "edge: 'zero' -> 'one' at level 3 with parent: edge: 'zero' -> 'zero' (inc) "]
-     "26" [label= "edge: 'fiveInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fiveInc' (assert) " color = "red"]
-     "21" [label= "edge: 'two' -> 'end' at level 3 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
-     "17" [label= "edge: 'zero' -> 'one' at level 2 with parent: edge: 'reset' -> 'zero' (inc) "]
-     "24" [label= "edge: 'fourInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fourInc' (assert) " color = "red"]
-     "11" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
-     "7" [label= "edge: 'zero' -> 'two' at level 5 with parent: edge: 'zero' -> 'zero' (inc2) " color = "red"]
-     "23" [label= "edge: 'fourOrFive' -> 'fourInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc2) "]
-     "3" [label= "edge: 'zero' -> 'zero' at level 3 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
-     "8" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'zero' -> 'zero' (inc) "]
-     "25" [label= "edge: 'fourOrFive' -> 'fiveInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc) "]
-     "15" [label= "edge: 'zero' -> 'two' at level 3 with parent: edge: 'zero' -> 'zero' (inc2) "]
-     "1" [label= "edge: 'reset' -> 'zero' at level 1 with parent: edge: null -> 'reset' (new SimpleCounterBES) "]
+     "28" [label= "edge: 'one' -> 'two' at level 7 with parent: edge: 'zero' -> 'one' (inc) "]
+     "31" [label= "edge: 'two' -> 'end' at level 7 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "10" [label= "edge: 'zero' -> 'zero' at level 10 with parent: edge: 'zero' -> 'zero' (setIncrementBy) " color = "red"]
+     "24" [label= "edge: 'two' -> 'end' at level 9 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "6" [label= "edge: 'zero' -> 'zero' at level 6 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "32" [label= "edge: 'zero' -> 'one' at level 5 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "12" [label= "edge: 'zero' -> 'two' at level 10 with parent: edge: 'zero' -> 'zero' (inc2) " color = "red"]
+     "20" [label= "edge: 'zero' -> 'two' at level 8 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "56" [label= "edge: 'fiveInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fiveInc' (assert) " color = "red"]
+     "9" [label= "edge: 'zero' -> 'zero' at level 9 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "51" [label= "edge: 'two' -> 'end' at level 3 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "47" [label= "edge: 'zero' -> 'one' at level 2 with parent: edge: 'reset' -> 'zero' (inc) "]
+     "54" [label= "edge: 'fourInc' -> 'end' at level 3 with parent: edge: 'fourOrFive' -> 'fourInc' (assert) " color = "red"]
+     "8" [label= "edge: 'zero' -> 'zero' at level 8 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "35" [label= "edge: 'zero' -> 'two' at level 5 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "53" [label= "edge: 'fourOrFive' -> 'fourInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc2) "]
+     "15" [label= "edge: 'zero' -> 'two' at level 9 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "29" [label= "edge: 'two' -> 'end' at level 8 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "37" [label= "edge: 'zero' -> 'one' at level 4 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "19" [label= "edge: 'two' -> 'end' at level 10 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "45" [label= "edge: 'zero' -> 'two' at level 3 with parent: edge: 'zero' -> 'zero' (inc2) "]
      "0" [label= "edge: null -> 'reset' at level 0 with parent: null"]
-     "10" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'zero' -> 'zero' (inc2) "]
-     "18" [label= "edge: 'one' -> 'two' at level 3 with parent: edge: 'zero' -> 'one' (inc) "]
-     "14" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
-     "4" [label= "edge: 'zero' -> 'zero' at level 4 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
-     "19" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
-     "20" [label= "edge: 'zero' -> 'two' at level 2 with parent: edge: 'reset' -> 'zero' (inc2) "]
-     "22" [label= "edge: 'reset' -> 'fourOrFive' at level 1 with parent: edge: null -> 'reset' (setIncrementBy) "]
-     "5" [label= "edge: 'zero' -> 'zero' at level 5 with parent: edge: 'zero' -> 'zero' (setIncrementBy) " color = "red"]
+     "13" [label= "edge: 'zero' -> 'one' at level 9 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "40" [label= "edge: 'zero' -> 'two' at level 4 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "34" [label= "edge: 'two' -> 'end' at level 7 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "44" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "49" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "52" [label= "edge: 'reset' -> 'fourOrFive' at level 1 with parent: edge: null -> 'reset' (setIncrementBy) "]
+     "25" [label= "edge: 'zero' -> 'two' at level 7 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "17" [label= "edge: 'zero' -> 'one' at level 8 with parent: edge: 'zero' -> 'zero' (inc) "]
      "2" [label= "edge: 'zero' -> 'zero' at level 2 with parent: edge: 'reset' -> 'zero' (setIncrementBy) "]
+     "46" [label= "edge: 'two' -> 'end' at level 4 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "16" [label= "edge: 'two' -> 'end' at level 10 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "43" [label= "edge: 'one' -> 'two' at level 4 with parent: edge: 'zero' -> 'one' (inc) "]
+     "18" [label= "edge: 'one' -> 'two' at level 9 with parent: edge: 'zero' -> 'one' (inc) "]
+     "36" [label= "edge: 'two' -> 'end' at level 6 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "38" [label= "edge: 'one' -> 'two' at level 5 with parent: edge: 'zero' -> 'one' (inc) "]
+     "23" [label= "edge: 'one' -> 'two' at level 8 with parent: edge: 'zero' -> 'one' (inc) "]
+     "22" [label= "edge: 'zero' -> 'one' at level 7 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "42" [label= "edge: 'zero' -> 'one' at level 3 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "33" [label= "edge: 'one' -> 'two' at level 6 with parent: edge: 'zero' -> 'one' (inc) "]
+     "41" [label= "edge: 'two' -> 'end' at level 5 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "3" [label= "edge: 'zero' -> 'zero' at level 3 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "11" [label= "edge: 'zero' -> 'one' at level 10 with parent: edge: 'zero' -> 'zero' (inc) " color = "red"]
+     "27" [label= "edge: 'zero' -> 'one' at level 6 with parent: edge: 'zero' -> 'zero' (inc) "]
+     "39" [label= "edge: 'two' -> 'end' at level 6 with parent: edge: 'one' -> 'two' (assert) " color = "red"]
+     "55" [label= "edge: 'fourOrFive' -> 'fiveInc' at level 2 with parent: edge: 'reset' -> 'fourOrFive' (inc) "]
+     "1" [label= "edge: 'reset' -> 'zero' at level 1 with parent: edge: null -> 'reset' (new SimpleCounterBES) "]
+     "30" [label= "edge: 'zero' -> 'two' at level 6 with parent: edge: 'zero' -> 'zero' (inc2) "]
+     "48" [label= "edge: 'one' -> 'two' at level 3 with parent: edge: 'zero' -> 'one' (inc) "]
+     "4" [label= "edge: 'zero' -> 'zero' at level 4 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "7" [label= "edge: 'zero' -> 'zero' at level 7 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "21" [label= "edge: 'two' -> 'end' at level 9 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "50" [label= "edge: 'zero' -> 'two' at level 2 with parent: edge: 'reset' -> 'zero' (inc2) "]
+     "5" [label= "edge: 'zero' -> 'zero' at level 5 with parent: edge: 'zero' -> 'zero' (setIncrementBy) "]
+     "26" [label= "edge: 'two' -> 'end' at level 8 with parent: edge: 'zero' -> 'two' (assert) " color = "red"]
+     "14" [label= "edge: 'one' -> 'two' at level 10 with parent: edge: 'zero' -> 'one' (inc) " color = "red"]
   }
 
-  "13" -> "14";
-  "12" -> "13";
-  "17" -> "18";
-  "23" -> "24";
-  "3" -> "4";
-  "3" -> "8";
-  "3" -> "10";
-  "8" -> "9";
-  "25" -> "26";
-  "15" -> "16";
-  "1" -> "2";
-  "1" -> "17";
-  "1" -> "20";
-  "0" -> "1";
-  "0" -> "22";
-  "10" -> "11";
-  "18" -> "19";
-  "4" -> "5";
-  "4" -> "6";
-  "4" -> "7";
+  "28" -> "29";
+  "6" -> "7";
+  "6" -> "22";
+  "6" -> "25";
+  "32" -> "33";
   "20" -> "21";
-  "22" -> "23";
-  "22" -> "25";
+  "9" -> "10";
+  "9" -> "11";
+  "9" -> "12";
+  "47" -> "48";
+  "8" -> "9";
+  "8" -> "13";
+  "8" -> "15";
+  "35" -> "36";
+  "53" -> "54";
+  "15" -> "16";
+  "37" -> "38";
+  "45" -> "46";
+  "0" -> "1";
+  "0" -> "52";
+  "13" -> "14";
+  "40" -> "41";
+  "52" -> "53";
+  "52" -> "55";
+  "25" -> "26";
+  "17" -> "18";
   "2" -> "3";
-  "2" -> "12";
-  "2" -> "15";
+  "2" -> "42";
+  "2" -> "45";
+  "43" -> "44";
+  "18" -> "19";
+  "38" -> "39";
+  "23" -> "24";
+  "22" -> "23";
+  "42" -> "43";
+  "33" -> "34";
+  "3" -> "4";
+  "3" -> "37";
+  "3" -> "40";
+  "27" -> "28";
+  "55" -> "56";
+  "1" -> "2";
+  "1" -> "47";
+  "1" -> "50";
+  "30" -> "31";
+  "48" -> "49";
+  "4" -> "5";
+  "4" -> "32";
+  "4" -> "35";
+  "7" -> "8";
+  "7" -> "17";
+  "7" -> "20";
+  "50" -> "51";
+  "5" -> "6";
+  "5" -> "27";
+  "5" -> "30";
 }
