@@ -1,4 +1,4 @@
-package models.arraylistmodel 
+package modbat.bes.arraylistmodel
 
 import java.util.ArrayList
 import java.util.Iterator

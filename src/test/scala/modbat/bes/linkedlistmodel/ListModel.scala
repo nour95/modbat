@@ -1,4 +1,4 @@
-package models.linkedlistmodel
+package modbat.bes.linkedlistmodel
 
 import java.util.ArrayList
 import java.util.Iterator

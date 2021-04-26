@@ -1,4 +1,4 @@
-package models.arraylistmodel
+package modbat.bes.arraylistmodel
 
 import modbat.dsl._
 

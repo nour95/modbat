@@ -1,4 +1,4 @@
-package models.linkedlistmodel
+package modbat.bes.linkedlistmodel
 
 object Containers {
   val limit = 16
