@@ -772,9 +772,11 @@ class Modbat(val mbt: MBT) {
     for (c <- choices) {
       w = w + c._2.action.weight
       if (w >= n) {
+//        origOut.println("choice: " + c + " has been chosen ")
         return c
       }
     }
+//    origOut.println("choice: " + choices.last + " has been chosen ")
     choices.last
   }
 
