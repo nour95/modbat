@@ -448,9 +448,9 @@ class Modbat(val mbt: MBT) {
       randomSeed = getRandomSeed
       val seed = randomSeed.toHexString
       failed match {
-        case 0 => mbt.log.out.printf("%8d %16s", Integer.valueOf(i), seed) //TODO remove %n
-        case 1 => mbt.log.out.printf("%8d %16s, one test failed.", Integer.valueOf(i), seed)  //TODO remove %n
-        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.", Integer.valueOf(i), seed, Integer.valueOf(failed))  //TODO remove %n
+        case 0 => mbt.log.out.printf("%8d %16s %n", Integer.valueOf(i), seed) //TODO remove %n
+        case 1 => mbt.log.out.printf("%8d %16s, one test failed.%n", Integer.valueOf(i), seed)  //TODO remove %n
+        case _ => mbt.log.out.printf("%8d %16s, %d tests failed.%n", Integer.valueOf(i), seed, Integer.valueOf(failed))  //TODO remove %n
       }
       logFile = mbt.config.logPath + "/" + seed + ".log"
       errFile = mbt.config.logPath + "/" + seed + ".err"
