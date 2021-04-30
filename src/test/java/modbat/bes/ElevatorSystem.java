@@ -18,10 +18,13 @@ public class ElevatorSystem
 
         if (doorOpened == false) {             //todo this is always false
             currentFloor = requestingFloor;
-            return true;
+            throw new RuntimeException("nour error");
+//            return true;
         }
         else
-            return false;
+            throw new RuntimeException("nour error");
+
+//        return false;
     }
 
     public void openDoor()
@@ -37,6 +40,9 @@ public class ElevatorSystem
 
         if (openWarningCounter < 5 && closeWarningCounter < 5)
             warningHappen = false;
+
+        throw new RuntimeException("nour error");
+
     }
 
     public void closeDoor()
@@ -52,10 +58,15 @@ public class ElevatorSystem
 
         if (openWarningCounter < 5 && closeWarningCounter < 5)
             warningHappen = false;
+
+        throw new RuntimeException("nour error");
+
     }
 
     public boolean isDoorOpened() {
-        return doorOpened;
+        throw new RuntimeException("nour error");
+
+//        return doorOpened;
     }
 
     public int getCurrentFloor() {
