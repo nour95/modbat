@@ -170,7 +170,8 @@ class ModelInstance (val mbt: MBT, val model: Model,
 
 //        mbt.origLog.out.println("The number of paths in trie for the model " + this.name + ": " + iterativeSearch.getLeafCount())
         //mbt.log.info("Trie in the model " + this.name + " has " + iterativeSearch.getLeafCount() + " different path") //todo
-        iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
+        if (mbt.config.search == "exhaustive" && mbt.config.dotifyTrie)
+          iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
       }
     }
 
