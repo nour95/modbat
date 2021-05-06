@@ -113,9 +113,9 @@ class Configuration extends modbat.config.Configuration {
   @Requires(opt = "search", equals = "exhaustive")
   var removeLoops = false  // todo make careful to use '-' because no camel cases in the bash
 
-  @Doc("the option for writing the trie to a dot file (true) or not (false) (for usage search=exhaustive)")
-  @Requires(opt = "search", equals = "exhaustive")
-  var dotifyTrie = false
+//  @Doc("the option for writing the trie to a dot file (true) or not (false) (for usage search=exhaustive)")
+//  @Requires(opt = "search", equals = "exhaustive")
+//  var dotifyTrie = false
 
 
 

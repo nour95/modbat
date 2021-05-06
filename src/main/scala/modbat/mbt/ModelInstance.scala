@@ -158,7 +158,7 @@ class ModelInstance (val mbt: MBT, val model: Model,
     //    val firstModelInstance: ModelInstance = mbt.firstInstance.getOrElse(this.className, sys.error("Illegal state"))
     if (isFirstInstance) {
       val graph: GraphAdaptor = new GraphAdaptor(mbt.config, this)
-      graph.printGraphTo(mbt.config.dotDir + File.separator + this.className + "_graph.dot")
+//      graph.printGraphTo(mbt.config.dotDir + File.separator + this.className + "_graph.dot")
       //      graph.setOutStream(mbt.origLog.out) // TODO: comment later or change to work in debug mode
       //      graph.setErrStream(mbt.origLog.err) // TODO: comment later or change to work in debug mode
       this.graph = graph
@@ -170,8 +170,8 @@ class ModelInstance (val mbt: MBT, val model: Model,
 
 //        mbt.origLog.out.println("The number of paths in trie for the model " + this.name + ": " + iterativeSearch.getLeafCount())
         //mbt.log.info("Trie in the model " + this.name + " has " + iterativeSearch.getLeafCount() + " different path") //todo
-        if (mbt.config.search == "exhaustive" && mbt.config.dotifyTrie)
-          iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
+//        if (mbt.config.search == "exhaustive" && mbt.config.dotifyTrie)
+//          iterativeSearch.printTrieTo(mbt.config.dotDir + File.separator + this.className + "_trie.dot")
       }
     }
 
