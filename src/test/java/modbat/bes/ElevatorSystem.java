@@ -32,7 +32,7 @@ public class ElevatorSystem
 
         if (openWarningCounter >= 5){
             warningHappen = true;
-            System.out.println("The door is OPENED. You pressed the same button 5 times");
+//            System.out.println("The door is OPENED. You pressed the same button 5 times");
         }
 
         if (openWarningCounter < 5 && closeWarningCounter < 5)

@@ -53,15 +53,18 @@ public class Trie<T extends Edge> //todo need dotify to this too
         if(removeLoops)
         {
 
-            if(parentTrieNode != null && newNode.equals(parentTrieNode.getData())
-                    && parentTrieNode.getParent() != null &&  parentTrieNode.getData().equals(parentTrieNode.getParent().getData())) {
+            if(parentTrieNode != null && newNode.equals(parentTrieNode.getData()) ){
+                    //&& parentTrieNode.getParent() != null &&  parentTrieNode.getData().equals(parentTrieNode.getParent().getData())) {
                 return null;
             }
 
-            if (parentTrieNode != null && newNode.equals(parentTrieNode.getData()) && parentTrieNode.getParent() != null)
+            if (parentTrieNode != null )//&& newNode.equals(parentTrieNode.getData()) && parentTrieNode.getParent() != null)
             {
-                Edge p = (Edge) parentTrieNode.getParent().getData();
-                if (p.getSource() == null && p.getDestination() == (Node) parentTrieNode.getData().getDestination() )
+//                Edge p = (Edge) parentTrieNode.getParent().getData();
+                Edge p = (Edge) parentTrieNode.getData();
+
+//                Node x = (Node) newNode.getData().getDestination()
+                if (p.getSource() == null && p.getDestination() == (Node) newNode.getDestination())  // parentTrieNode.getData().getDestination() )
                     return null;
             }
 
