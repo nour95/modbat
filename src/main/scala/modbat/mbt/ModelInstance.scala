@@ -159,8 +159,8 @@ class ModelInstance (val mbt: MBT, val model: Model,
     if (isFirstInstance) {
       val graph: GraphAdaptor = new GraphAdaptor(mbt.config, this)
 //      graph.printGraphTo(mbt.config.dotDir + File.separator + this.className + "_graph.dot")
-      //      graph.setOutStream(mbt.origLog.out) // TODO: comment later or change to work in debug mode
-      //      graph.setErrStream(mbt.origLog.err) // TODO: comment later or change to work in debug mode
+//            graph.setOutStream(mbt.origLog.out) // TODO: comment later or change to work in debug mode
+//            graph.setErrStream(mbt.origLog.err) // TODO: comment later or change to work in debug mode
       this.graph = graph
 
       if(mbt.config.search == "exhaustive")
